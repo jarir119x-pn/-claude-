@@ -1,0 +1,27 @@
+{
+  "name": "arabic-translation-stats-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "فيديو Remotion: واقع الترجمة في العالم العربي بالأرقام",
+  "scripts": {
+    "dev": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts TranslationStats out/translation-stats.mp4",
+    "still": "remotion still src/index.ts TranslationStats out/thumbnail.png --frame=150",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/amiri": "5.3.0",
+    "@fontsource/cairo": "5.3.0",
+    "@fontsource/reem-kufi": "5.3.0",
+    "@remotion/cli": "4.0.534",
+    "@remotion/transitions": "4.0.534",
+    "@remotion/noise": "4.0.534",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.534"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
