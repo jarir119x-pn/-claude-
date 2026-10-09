@@ -1,0 +1,16 @@
+امحُ من ذاكرتك — المواد الخارجية في الفيلم
+
+الخطوط (SIL Open Font License 1.1، النصوص الكاملة في fonts/OFL-*.txt):
+- Aref Ruqaa — Abdullah Aref — https://github.com/google/fonts/tree/main/ofl/arefruqaa — خط اليد (ملاحظات القلم)
+- Amiri — Khaled Hosny — https://github.com/google/fonts/tree/main/ofl/amiri — العناوين والتعليق السفلي
+- IBM Plex Sans Arabic — IBM — https://github.com/google/fonts/tree/main/ofl/ibmplexsansarabic — تسميات الرسوم
+- IBM Plex Mono — IBM — https://github.com/google/fonts/tree/main/ofl/ibmplexmono — أرقام المحاور
+
+محرك الرسم (engine.js): مقتبس من أسلوب Data Storytelling في مكتبة Lemo-Opuscar (MIT) — https://github.com/lemomo-ai/lemo-opuscar
+الصوت: لا يوجد (فيلم صامت بطلب المستخدم).
+
+البيانات (كما وردت في نص المستخدم، مع تصحيح الحساب):
+- 4.4 / 519 / 920 كتابًا لكل مليون نسمة، النصف الأول من الثمانينات — تقرير التنمية الإنسانية العربية (UNDP)
+- 330 كتابًا في السنة — تقرير عام 2002
+- نحو 3,000 كتاب في السنة (تقدير) — France 24
+- فرنسا ~19,000 في السنة؛ البرازيل 2,291 مقابل 26 عنوانًا في سنة مرصودة؛ إسرائيل (4.5 مليون نسمة آنذاك) — من نص المستخدم
