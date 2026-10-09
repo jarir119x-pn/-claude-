@@ -31,3 +31,8 @@ npm run render   # تصدير out/translation-stats.mp4
 ```
 
 مدد المشاهد معرّفة كثوابت في أعلى كل ملف مشهد، وترتيبها في `src/Video.tsx`.
+
+## مهارة Lemo-Opuscar
+
+في `.claude/skills/lemo-opuscar/` مهارة [Lemo-Opuscar](https://github.com/lemomo-ai/lemo-opuscar) (رخصة MIT) لإخراج أفلام قصيرة بالكود في عشرات الأساليب الفنية (حبر صيني، ألوان مائية، أوكييو-إي، سبورة بيضاء…). يكفي أن تطلب من Claude فيلمًا بأسلوب معيّن داخل هذا المشروع.
+عند أول استعمال تنزّل المهارة مكتبة الأساليب إلى `~/lemo-opuscar`، وتحتاج Node 20+ وffmpeg وPython 3.11+.
