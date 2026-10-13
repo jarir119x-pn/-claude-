@@ -1,121 +1,114 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
-import { RevealText } from "../components/RevealText";
-import { Divider, ExitFade, PillarHeading, SafeBlock } from "../components/Ornaments";
+import { useCurrentFrame } from "remotion";
+import { NotebookPage, PageGeometry, PlacedBlock } from "../components/NotebookPage";
 import { HEADINGS, QADAA, words } from "../content";
-import { KUFI } from "../fonts";
-import { COLORS, CONTENT_TOP, EASE_IN_OUT, LINE_HEIGHT, SAFE_BOX, W, progress, reveal } from "../theme";
-import { sceneFrames, wordFrame } from "../timings";
+import { C, EASE_IN_OUT, PAPER, TEXT_LEFT, TEXT_W, progress } from "../theme";
+import { wordFrame } from "../timings";
 
-// ترتيب الكلمات: المقدمة ← «السيئة» ← أوصافها ← «الحسنة» ← أوصافها
 const nIntro = words(QADAA.intro).length;
 const nBad = words(QADAA.bad).length;
-const BAD_LABEL_AT = nIntro;
-const BAD_AT = BAD_LABEL_AT + 1;
-const GOOD_LABEL_AT = BAD_AT + nBad;
-const GOOD_AT = GOOD_LABEL_AT + 1;
+const BAD_START = nIntro;
+const GOOD_START = nIntro + nBad;
+const BAD_STRONG = [BAD_START + 1, BAD_START + 3, BAD_START + 4, BAD_START + 5]; // السيئة + أوصافها
+const GOOD_RUST = [GOOD_START, GOOD_START + 2, GOOD_START + 3, GOOD_START + 4]; // الحسنة + أوصافها
 
-const INTRO_H = 130;
-const SPLIT_Y = Math.round(
-  (CONTENT_TOP + INTRO_H + SAFE_BOX.y + SAFE_BOX.h) / 2,
-); // منتصف ما تحت المقدمة
-
-const Label: React.FC<{ text: string; at: number; color: string }> = ({ text, at, color }) => {
+/** ميزان بخط حبر رفيع يميل نحو الحسنة عند ظهورها */
+const Scale: React.FC<{ b: PlacedBlock }> = ({ b }) => {
   const frame = useCurrentFrame();
+  const draw = progress(frame, 0, 34, EASE_IN_OUT);
+  const tilt = 8 * progress(frame, wordFrame(GOOD_START), 34, EASE_IN_OUT);
+  const cx = TEXT_LEFT + TEXT_W / 2;
+  const py = b.top + 26;
+  const L = 170;
+  const t = (tilt * Math.PI) / 180;
+  // اليمين = السيئة، اليسار = الحسنة (تنزل)
+  const right = { x: cx + L * Math.cos(t), y: py - L * Math.sin(t) };
+  const left = { x: cx - L * Math.cos(t), y: py + L * Math.sin(t) };
+  const drop = Math.min(96, b.height * 0.42);
+  const pan = (e: { x: number; y: number }, fill: string) => (
+    <g>
+      <path d={`M ${e.x} ${e.y} L ${e.x - 52} ${e.y + drop} M ${e.x} ${e.y} L ${e.x + 52} ${e.y + drop}`} />
+      <path
+        d={`M ${e.x - 62} ${e.y + drop} Q ${e.x} ${e.y + drop + 34} ${e.x + 62} ${e.y + drop} Z`}
+        fill={fill}
+      />
+    </g>
+  );
+  const baseY = b.top + b.height - 10;
   return (
-    <div
-      style={{
-        direction: "rtl",
-        fontFamily: KUFI,
-        fontWeight: 700,
-        fontSize: 48,
-        lineHeight: LINE_HEIGHT,
-        color,
-        ...reveal(frame, at, 18),
-      }}
-    >
-      {text}
-    </div>
+    <svg width={1080} height={1920} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
+      <g
+        fill="none"
+        stroke={C.ink}
+        strokeWidth={2.4}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={0.9}
+        style={{
+          clipPath: `inset(0 0 ${(1 - draw) * 100}% 0)`,
+        }}
+      >
+        <path d={`M ${cx} ${py - 14} L ${cx} ${baseY} M ${cx - 46} ${baseY} L ${cx + 46} ${baseY}`} />
+        <circle cx={cx} cy={py - 20} r={6} />
+        <path d={`M ${left.x} ${left.y} L ${right.x} ${right.y}`} />
+        {pan(right, "rgba(157,165,156,0.35)")}
+        {pan(left, "rgba(201,143,107,0.35)")}
+      </g>
+    </svg>
   );
 };
 
-export const S5Qadaa: React.FC = () => {
+/** ظلّ مريمية باهت خلف السيئة، وظل تيراكوتا خفيف خلف الحسنة */
+const Bands: React.FC<{ g: PageGeometry }> = ({ g }) => {
   const frame = useCurrentFrame();
-  const total = sceneFrames("qadaa");
-  const split = wordFrame(BAD_LABEL_AT) - 6;
-  const line = progress(frame, split, 26, EASE_IN_OUT);
-  const coldOpen = progress(frame, split + 6, 40);
-  const warmOpen = progress(frame, wordFrame(GOOD_LABEL_AT) - 4, 40);
-  const width = SAFE_BOX.w - 40;
+  const textBlocks = g.blocks.filter((b) => b.kind === "text");
+  const bad = textBlocks[1];
+  const good = textBlocks[2];
+  const band = (b: PlacedBlock, rgb: string, at: number) => {
+    const o = progress(frame, at, 30);
+    const pad = g.P * 0.35;
+    return (
+      <div
+        style={{
+          position: "absolute",
+          left: PAPER.x + 8,
+          width: PAPER.w - 16,
+          top: b.top - pad,
+          height: b.height + pad * 2,
+          opacity: o,
+          background: `linear-gradient(180deg, rgba(${rgb},0) 0%, rgba(${rgb},0.2) 22%, rgba(${rgb},0.2) 78%, rgba(${rgb},0) 100%)`,
+        }}
+      />
+    );
+  };
   return (
-    <ExitFade duration={total}>
-      <AbsoluteFill>
-        {/* النصف الأعلى: بارد */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            width: W,
-            top: 0,
-            height: SPLIT_Y,
-            background: `linear-gradient(0deg, rgba(122,134,153,${0.2 * coldOpen}) 0%, rgba(122,134,153,${0.07 * coldOpen}) 45%, rgba(122,134,153,0) 85%)`,
-          }}
-        />
-        {/* النصف الأسفل: ذهبي دافئ */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            width: W,
-            top: SPLIT_Y,
-            bottom: 0,
-            background: `linear-gradient(180deg, rgba(201,164,92,${0.22 * warmOpen}) 0%, rgba(201,164,92,${0.08 * warmOpen}) 45%, rgba(201,164,92,0) 85%)`,
-          }}
-        />
-        {/* خط الانقسام */}
-        <div
-          style={{
-            position: "absolute",
-            top: SPLIT_Y - 14,
-            left: 0,
-            width: W,
-          }}
-        >
-          <Divider p={line} width={W - 40} />
-        </div>
-
-        <PillarHeading text={HEADINGS.qadaa} />
-        <SafeBlock top={CONTENT_TOP} bottom={CONTENT_TOP + INTRO_H}>
-          <RevealText text={QADAA.intro} mode="word" fontSize={62} width={width} />
-        </SafeBlock>
-
-        <SafeBlock top={CONTENT_TOP + INTRO_H} bottom={SPLIT_Y - 20}>
-          <Label text={QADAA.badLabel} at={wordFrame(BAD_LABEL_AT)} color={COLORS.cold} />
-          <RevealText
-            text={QADAA.bad}
-            mode="word"
-            start={wordFrame(BAD_AT)}
-            fontSize={84}
-            fontWeight={700}
-            width={width}
-            color={COLORS.cold}
-          />
-        </SafeBlock>
-
-        <SafeBlock top={SPLIT_Y + 20} bottom={SAFE_BOX.y + SAFE_BOX.h}>
-          <Label text={QADAA.goodLabel} at={wordFrame(GOOD_LABEL_AT)} color={COLORS.gold} />
-          <RevealText
-            text={QADAA.good}
-            mode="word"
-            start={wordFrame(GOOD_AT)}
-            fontSize={84}
-            fontWeight={700}
-            width={width}
-            color={COLORS.gold}
-            style={{ textShadow: "0 0 28px rgba(201,164,92,0.35)" }}
-          />
-        </SafeBlock>
-      </AbsoluteFill>
-    </ExitFade>
+    <>
+      {band(bad, "157,165,156", wordFrame(BAD_START) - 6)}
+      {band(good, "201,143,107", wordFrame(GOOD_START) - 6)}
+    </>
   );
 };
+
+export const S5Qadaa: React.FC = () => (
+  <NotebookPage
+    id="qadaa"
+    heading={HEADINGS.qadaa}
+    pageNo={6}
+    maxFs={62}
+    blocks={[
+      { kind: "figure", rows: 2, key: "scale" },
+      { kind: "text", text: QADAA.intro, mode: "line" },
+      { kind: "gap", rows: 1 },
+      { kind: "text", text: QADAA.bad, mode: "word", color: C.inkLight },
+      { kind: "gap", rows: 1 },
+      { kind: "text", text: QADAA.good, mode: "word" },
+    ]}
+    marks={(i) => {
+      if (BAD_STRONG.includes(i)) return { tintAt: null, underlineAt: null };
+      if (GOOD_RUST.includes(i)) return {};
+      return undefined;
+    }}
+    underlay={(g) => <Bands g={g} />}
+    figure={(_, b) => <Scale b={b} />}
+  />
+);

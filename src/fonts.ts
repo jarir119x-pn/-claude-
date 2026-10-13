@@ -1,16 +1,14 @@
-import { loadFont as loadAmiri } from "@remotion/google-fonts/Amiri";
-import { loadFont as loadKufi } from "@remotion/google-fonts/NotoKufiArabic";
+import { loadFont as loadMarkazi } from "@remotion/google-fonts/MarkaziText";
+import { loadFont as loadMessiri } from "@remotion/google-fonts/ElMessiri";
 
-// الأوزان المستخدمة فقط، والمجموعة العربية فقط.
-// loadFont يؤخّر العرض (delayRender) حتى يكتمل التحميل.
-const amiri = loadAmiri("normal", { weights: ["400", "700"], subsets: ["arabic"] });
-const kufi = loadKufi("normal", { weights: ["700"], subsets: ["arabic"] });
+// الأوزان المستخدمة فقط. loadFont يؤخّر العرض (delayRender) حتى يكتمل التحميل.
+const markazi = loadMarkazi("normal", { weights: ["400", "600"], subsets: ["arabic", "latin"] });
+const messiri = loadMessiri("normal", { weights: ["600"], subsets: ["arabic", "latin"] });
 
-export const AMIRI = amiri.fontFamily;
-export const KUFI = kufi.fontFamily;
+export const MARKAZI = markazi.fontFamily;
+export const MESSIRI = messiri.fontFamily;
 
-/** يُنتظر قبل قياس الأسطر */
 export const fontsReady: Promise<void> = Promise.all([
-  amiri.waitUntilDone(),
-  kufi.waitUntilDone(),
+  markazi.waitUntilDone(),
+  messiri.waitUntilDone(),
 ]).then(() => document.fonts.ready.then(() => undefined));

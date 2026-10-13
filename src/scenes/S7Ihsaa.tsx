@@ -1,35 +1,17 @@
 import React from "react";
-import { AbsoluteFill } from "remotion";
-import { RevealText } from "../components/RevealText";
-import { ExitFade, PillarHeading, SafeBlock } from "../components/Ornaments";
+import { NotebookPage } from "../components/NotebookPage";
 import { HEADINGS, IHSAA, indexOfWord } from "../content";
-import { COLORS, CONTENT_TOP, SAFE_BOX, fitFontSize } from "../theme";
-import { sceneFrames } from "../timings";
 
-/** الدين، والأخلاق، والآداب: ذهبية */
-const GOLD_WORDS = ["الدِّينِ", "الأخلاقِ", "الآدابِ"].map((w) => indexOfWord(IHSAA, w));
+/** الدين، والأخلاق، والآداب */
+const MARKED = ["الدِّينِ", "الأخلاقِ", "الآدابِ"].map((w) => indexOfWord(IHSAA, w));
 
-export const S7Ihsaa: React.FC = () => {
-  const total = sceneFrames("ihsaa");
-  const width = SAFE_BOX.w - 40;
-  const boxH = SAFE_BOX.y + SAFE_BOX.h - CONTENT_TOP;
-  return (
-    <ExitFade duration={total}>
-      <AbsoluteFill>
-        <PillarHeading text={HEADINGS.ihsaa} />
-        <SafeBlock top={CONTENT_TOP}>
-          <RevealText
-            text={IHSAA}
-            mode="line"
-            fontSize={fitFontSize(IHSAA, width, boxH)}
-            width={width}
-            maxHeight={boxH - 20}
-            wordStyle={(i) =>
-              GOLD_WORDS.includes(i) ? { color: COLORS.gold, fontWeight: 700 } : undefined
-            }
-          />
-        </SafeBlock>
-      </AbsoluteFill>
-    </ExitFade>
-  );
-};
+export const S7Ihsaa: React.FC = () => (
+  <NotebookPage
+    id="ihsaa"
+    heading={HEADINGS.ihsaa}
+    pageNo={8}
+    maxFs={64}
+    blocks={[{ kind: "text", text: IHSAA, mode: "line" }]}
+    marks={(i) => (MARKED.includes(i) ? {} : undefined)}
+  />
+);

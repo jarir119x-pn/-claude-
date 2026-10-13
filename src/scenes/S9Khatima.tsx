@@ -1,69 +1,147 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
-import { RevealText } from "../components/RevealText";
-import { SafeBlock } from "../components/Ornaments";
+import { useCurrentFrame } from "remotion";
+import { Leather } from "../components/Desk";
+import { Fleuron, wipeMask } from "../components/Ink";
+import { baselineIn, useFontMetrics } from "../components/layout";
+import { NotebookPage, PlacedBlock } from "../components/NotebookPage";
 import { ATTRIBUTION, KHATIMA, words } from "../content";
-import { AMIRI } from "../fonts";
-import { COLORS, LINE_HEIGHT, MIN_FONT, SAFE_BOX, fitFontSize, progress, reveal } from "../theme";
-import { wordFrame } from "../timings";
+import { MARKAZI } from "../fonts";
+import { C, EASE_IN_OUT, LINEAR, MIN_FONT, PAPER, TEXT_LEFT, TEXT_W, progress } from "../theme";
+import { BOOK_CLOSE_FRAMES, unitFrames, wordFrame } from "../timings";
 
 const N = words(KHATIMA).length;
-/** «أفضلُ ذوي الألبابِ» بالذهبي */
-const GOLD = [0, 1, 2];
+const NA = ATTRIBUTION.reduce((n, t) => n + words(t).length, 0);
 
-const Attribution: React.FC = () => {
+/** «ابن المقفع — الأدب الصغير» بخط أصغر على سطر الدفتر، والشرطة خط رفيع */
+const Attribution: React.FC<{ b: PlacedBlock; P: number; baseOff: number }> = ({ b, P, baseOff }) => {
   const frame = useCurrentFrame();
+  const m = useFontMetrics();
+  if (!m) return null;
   const at = wordFrame(N);
-  const dash = progress(frame, at + 8, 20);
+  const p = progress(frame, at, wordFrame(NA), LINEAR);
+  const shift = baseOff - baselineIn(P, MIN_FONT, m);
   return (
     <div
       style={{
-        marginTop: 46,
+        position: "absolute",
+        top: b.top + shift,
+        left: TEXT_LEFT,
+        width: TEXT_W,
+        height: P,
         display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 22,
-        direction: "rtl",
-        fontFamily: AMIRI,
-        fontSize: MIN_FONT,
-        lineHeight: LINE_HEIGHT,
-        color: COLORS.gold,
-        ...reveal(frame, at, 24),
+        justifyContent: "center",
       }}
     >
-      <span>{ATTRIBUTION[0]}</span>
-      <span
+      <div
         style={{
-          display: "inline-block",
-          width: 46,
-          height: 2,
-          background: COLORS.gold,
-          transform: `scaleX(${dash})`,
-          opacity: 0.85,
+          display: "flex",
+          alignItems: "center",
+          gap: 22,
+          direction: "rtl",
+          fontFamily: MARKAZI,
+          fontSize: MIN_FONT,
+          lineHeight: `${P}px`,
+          color: C.warmGray,
+          padding: "0 6px",
+          opacity: progress(frame, at, 6),
+          ...wipeMask(p),
         }}
-      />
-      <span>{ATTRIBUTION[1]}</span>
+      >
+        <span>{ATTRIBUTION[0]}</span>
+        <span style={{ width: 40, height: 2, background: C.terracotta, marginTop: 6 }} />
+        <span>{ATTRIBUTION[1]}</span>
+      </div>
     </div>
   );
 };
 
-export const S9Khatima: React.FC = () => {
-  const width = SAFE_BOX.w - 60;
+/** يُغلق الدفتر ببطء ويظهر غلافه الجلدي */
+const Cover: React.FC = () => {
+  const frame = useCurrentFrame();
+  const closeAt = unitFrames(N + NA); // بعد تثبيت الخاتمة
+  const p = progress(frame, closeAt, Math.round(BOOK_CLOSE_FRAMES * 0.65), EASE_IN_OUT);
+  if (p <= 0) return null;
+  const angle = 180 - 180 * p;
+  const spine = PAPER.x + PAPER.w;
+  const shade = Math.sin(p * Math.PI) * 0.35;
   return (
-    <AbsoluteFill>
-      <SafeBlock>
-        <RevealText
-          text={KHATIMA}
-          mode="line"
-          fontSize={fitFontSize(KHATIMA, width, SAFE_BOX.h * 0.45, { max: 76 })}
-          width={width}
-          maxHeight={SAFE_BOX.h * 0.7}
-          fontWeight={700}
-          style={{ textWrap: "balance" }}
-          wordStyle={(i) => (GOLD.includes(i) ? { color: COLORS.gold } : undefined)}
-        />
-        <Attribution />
-      </SafeBlock>
-    </AbsoluteFill>
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        perspective: 2600,
+        perspectiveOrigin: `${spine}px 50%`,
+        zIndex: 5,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transformOrigin: `${spine + 8}px 50%`,
+          transform: `rotateY(${angle}deg)`,
+          backfaceVisibility: "hidden",
+        }}
+      >
+        <Leather
+          style={{
+            left: PAPER.x - 14,
+            top: PAPER.y - 10,
+            width: PAPER.w + 22,
+            height: PAPER.h + 22,
+            boxShadow: "0 24px 40px rgba(74,53,40,0.25)",
+          }}
+        >
+          {/* تذهيب أعمى: إطاران رفيعان وزهرة في الوسط، بلا نص */}
+          {[38, 52].map((i) => (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                inset: i,
+                border: "2px solid rgba(255,222,186,0.20)",
+                borderRadius: 6,
+              }}
+            />
+          ))}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Fleuron size={110} color="rgba(60,28,12,0.38)" />
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: 14,
+              background: `linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(40,20,10,${shade}) 100%)`,
+            }}
+          />
+        </Leather>
+      </div>
+    </div>
   );
 };
+
+export const S9Khatima: React.FC = () => (
+  <NotebookPage
+    id="khatima"
+    pageNo={10}
+    maxFs={72}
+    align="center"
+    blocks={[
+      { kind: "text", text: KHATIMA, mode: "line" },
+      { kind: "gap", rows: 1 },
+      { kind: "figure", rows: 1, key: "attribution" },
+    ]}
+    marks={(i) => (i <= 2 ? {} : undefined)}
+    figure={(_, b, g) => <Attribution b={b} P={g.P} baseOff={g.baseOff} />}
+    cover={<Cover />}
+  />
+);

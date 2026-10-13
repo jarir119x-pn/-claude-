@@ -1,62 +1,70 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
-import { RevealText } from "../components/RevealText";
-import { ExitFade, PillarHeading, SafeBlock } from "../components/Ornaments";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { NotebookPage } from "../components/NotebookPage";
 import { HEADINGS, ITHABA, indexOfWord } from "../content";
-import { CONTENT_TOP, EASE_IN_OUT, SAFE_BOX, fitFontSize, mix, progress } from "../theme";
-import { sceneFrames, wordFrame } from "../timings";
+import { EASE_IN_OUT, progress } from "../theme";
+import { wordFrame } from "../timings";
 
 /** النصف الثاني يبدأ عند «ويعاقبُ» */
 const TURN = indexOfWord(ITHABA, "ويعاقبُ");
-const WARM_TEXT = "#F6E7C9";
-const COOL_TEXT = "#D3D6DC";
 
-export const S6Ithaba: React.FC = () => {
+/** شمس تدفأ في النصف الأول، ثم يمرّ ظل سحابة فيبرد المشهد */
+const Light: React.FC = () => {
   const frame = useCurrentFrame();
-  const total = sceneFrames("ithaba");
-  const warm = progress(frame, 0, 30);
-  const cool = progress(frame, wordFrame(TURN) - 4, 45, EASE_IN_OUT);
-  const width = SAFE_BOX.w - 40;
-  const boxH = SAFE_BOX.y + SAFE_BOX.h - CONTENT_TOP;
+  const warm = progress(frame, 0, 60, EASE_IN_OUT);
+  const t0 = wordFrame(TURN) - 6;
+  const cool = progress(frame, t0 + 10, 40, EASE_IN_OUT);
+  const sweep = interpolate(frame, [t0, t0 + 50], [1400, -1400], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_IN_OUT,
+  });
   return (
-    <ExitFade duration={total}>
-      <AbsoluteFill>
-        {/* إضاءة دافئة… */}
-        <AbsoluteFill
+    <>
+      <AbsoluteFill
+        style={{
+          mixBlendMode: "multiply",
+          opacity: warm * (1 - cool) * 0.9,
+          background:
+            "radial-gradient(ellipse 80% 55% at 62% 40%, rgba(247,214,170,0.55) 0%, rgba(247,214,170,0.25) 60%, rgba(247,214,170,0.1) 100%)",
+        }}
+      />
+      <AbsoluteFill
+        style={{
+          mixBlendMode: "screen",
+          opacity: warm * (1 - cool),
+          background:
+            "radial-gradient(ellipse 60% 40% at 62% 38%, rgba(255,226,180,0.22) 0%, rgba(255,226,180,0) 70%)",
+        }}
+      />
+      {/* ظل السحابة يعبر ثم يستقر برودةً خافتة */}
+      <AbsoluteFill style={{ mixBlendMode: "multiply" }}>
+        <div
           style={{
-            opacity: warm * (1 - cool),
-            background:
-              "radial-gradient(ellipse 75% 45% at 50% 52%, rgba(214,170,90,0.24) 0%, rgba(201,164,92,0.08) 50%, rgba(201,164,92,0) 80%)",
+            position: "absolute",
+            top: -300,
+            left: sweep,
+            width: 1600,
+            height: 2500,
+            borderRadius: "50%",
+            background: "radial-gradient(closest-side, rgba(150,158,160,0.45), rgba(150,158,160,0))",
+            filter: "blur(30px)",
+            opacity: frame >= t0 ? 1 : 0,
           }}
         />
-        {/* …تبرد وتخفت */}
-        <AbsoluteFill
-          style={{
-            opacity: cool,
-            background:
-              "radial-gradient(ellipse 75% 45% at 50% 52%, rgba(122,134,153,0.14) 0%, rgba(122,134,153,0.04) 50%, rgba(0,0,0,0) 80%), rgba(3,6,12,0.38)",
-          }}
-        />
-        <PillarHeading text={HEADINGS.ithaba} />
-        <SafeBlock top={CONTENT_TOP}>
-          <RevealText
-            text={ITHABA}
-            mode="line"
-            fontSize={fitFontSize(ITHABA, width, boxH)}
-            width={width}
-            maxHeight={boxH - 20}
-            style={{ filter: `brightness(${1 - 0.12 * cool})` }}
-            wordStyle={(i) => ({
-              color:
-                i < TURN
-                  ? mix(WARM_TEXT, COOL_TEXT, cool * 0.6)
-                  : mix(WARM_TEXT, COOL_TEXT, cool),
-              textShadow: `0 0 22px rgba(201,164,92,${0.22 * warm * (1 - cool)})`,
-            })}
-          />
-        </SafeBlock>
+        <AbsoluteFill style={{ background: "rgba(196,202,204,1)", opacity: cool * 0.55 }} />
       </AbsoluteFill>
-    </ExitFade>
+    </>
   );
 };
 
+export const S6Ithaba: React.FC = () => (
+  <NotebookPage
+    id="ithaba"
+    heading={HEADINGS.ithaba}
+    pageNo={7}
+    maxFs={64}
+    blocks={[{ kind: "text", text: ITHABA, mode: "line" }]}
+    overlay={() => <Light />}
+  />
+);

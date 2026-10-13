@@ -1,111 +1,102 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
-import { RevealText } from "../components/RevealText";
-import { octagramPath } from "../components/Background";
-import { ExitFade } from "../components/Ornaments";
-import { TITLE } from "../content";
-import { AMIRI } from "../fonts";
-import { COLORS, EASE_IN_OUT, SAFE_CENTER_X, SAFE_CENTER_Y, progress } from "../theme";
-import { sceneFrames } from "../timings";
+import { Fleuron, InkText, wipeMask } from "../components/Ink";
+import { fitFont, useFontMetrics } from "../components/layout";
+import { splitLines } from "../components/NotebookPage";
+import { Paper } from "../components/Paper";
+import { TITLE, TITLE_LABEL, words } from "../content";
+import { MESSIRI } from "../fonts";
+import { C, LINEAR, SAFE_BOX, TEXT_W, progress } from "../theme";
+import { wordFrame } from "../timings";
 
-const FW = 760;
-const FH = 480;
+const TITLE_MAX = 112;
+const LABEL_FS = 54;
 
-/** مستطيل بزوايا مشطوفة */
-const notched = (x: number, y: number, w: number, h: number, n: number) =>
-  `M ${x + n} ${y} L ${x + w - n} ${y} L ${x + w} ${y + n} L ${x + w} ${y + h - n} L ${x + w - n} ${y + h} L ${x + n} ${y + h} L ${x} ${y + h - n} L ${x} ${y + n} Z`;
-
-const OrnateFrame: React.FC = () => {
-  const frame = useCurrentFrame();
-  const outer = progress(frame, 0, 62, EASE_IN_OUT);
-  const inner = progress(frame, 12, 62, EASE_IN_OUT);
-  const stars = progress(frame, 48, 30);
-  const pad = 30;
-  const corners = [
-    [pad, pad],
-    [FW + pad, pad],
-    [pad, FH + pad],
-    [FW + pad, FH + pad],
-  ];
-  return (
-    <svg
-      width={FW + pad * 2}
-      height={FH + pad * 2}
-      style={{
-        position: "absolute",
-        left: SAFE_CENTER_X - FW / 2 - pad,
-        top: SAFE_CENTER_Y - FH / 2 - pad,
-        overflow: "visible",
-      }}
-    >
-      <g fill="none" stroke={COLORS.gold} strokeLinejoin="round">
-        <path
-          d={notched(pad, pad, FW, FH, 36)}
-          strokeWidth={2.5}
-          pathLength={1}
-          strokeDasharray={1}
-          strokeDashoffset={1 - outer}
-        />
-        <path
-          d={notched(pad + 16, pad + 16, FW - 32, FH - 32, 24)}
-          strokeWidth={2}
-          opacity={0.55}
-          pathLength={1}
-          strokeDasharray={1}
-          strokeDashoffset={1 - inner}
-        />
-        {corners.map(([x, y], i) => (
-          <g key={i} opacity={stars} transform={`rotate(${(1 - stars) * 45} ${x} ${y})`}>
-            <path d={octagramPath(x, y, 15)} strokeWidth={2} fill={COLORS.navyDeep} />
-            <circle cx={x} cy={y} r={4} fill={COLORS.gold} stroke="none" />
-          </g>
-        ))}
-        {[pad, FH + pad].map((y, i) => (
-          <g key={i} opacity={stars}>
-            <path
-              d={`M ${pad + FW / 2} ${y - 13} L ${pad + FW / 2 + 13} ${y} L ${pad + FW / 2} ${y + 13} L ${pad + FW / 2 - 13} ${y} Z`}
-              strokeWidth={2}
-              fill={COLORS.navyDeep}
-            />
-          </g>
-        ))}
-      </g>
-    </svg>
-  );
-};
-
+/** صفحة عنوان كتاب قديم: «من الأدب الصغير» ثم العنوان ثم ❦ */
 export const S1Title: React.FC = () => {
-  const total = sceneFrames("title");
+  const frame = useCurrentFrame();
+  const metrics = useFontMetrics();
+  if (!metrics) return null;
+  const lines = splitLines(TITLE);
+  const TITLE_FS = fitFont(
+    lines.map((l) => l.map((word) => ({ word, weight: 600 }))),
+    TEXT_W - 40,
+    10000,
+    1,
+    TITLE_MAX,
+    MESSIRI,
+  );
+  const TITLE_P = Math.round(TITLE_FS * 1.55);
+  const n = words(TITLE).length;
+  const blockH = 90 + 34 + 2 + 40 + lines.length * TITLE_P + 26 + 64;
+  const top = Math.round(SAFE_BOX.y + (SAFE_BOX.h - blockH) / 2);
+  const titleTop = top + 90 + 34 + 2 + 40;
+  const fleuronTop = titleTop + lines.length * TITLE_P + 26;
+  const fl = progress(frame, wordFrame(n) - 6, 24);
   return (
-    <ExitFade duration={total}>
-      <AbsoluteFill>
-        <OrnateFrame />
-        <div
+    <AbsoluteFill>
+      <Paper margin={false} seed="page-title" />
+      <div
+        style={{
+          position: "absolute",
+          top,
+          left: SAFE_BOX.x,
+          width: SAFE_BOX.w,
+          textAlign: "center",
+          direction: "rtl",
+        }}
+      >
+        <span
           style={{
-            position: "absolute",
-            left: SAFE_CENTER_X - FW / 2,
-            top: SAFE_CENTER_Y - FH / 2,
-            width: FW,
-            height: FH,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            display: "inline-block",
+            fontFamily: MESSIRI,
+            fontWeight: 600,
+            fontSize: LABEL_FS,
+            lineHeight: "90px",
+            color: C.warmGray,
+            padding: "0 6px",
+            opacity: progress(frame, 0, 6),
+            ...wipeMask(progress(frame, 0, 22, LINEAR)),
           }}
         >
-          <RevealText
-            text={TITLE}
-            mode="line"
-            fontSize={100}
-            width={FW - 80}
-            maxHeight={FH - 60}
-            fontFamily={AMIRI}
-            fontWeight={700}
-            color={COLORS.gold}
-            revealFrames={26}
-            style={{ textShadow: "0 0 30px rgba(201,164,92,0.25)" }}
-          />
-        </div>
-      </AbsoluteFill>
-    </ExitFade>
+          {TITLE_LABEL}
+        </span>
+        <div
+          style={{
+            margin: "34px auto 0",
+            width: 120 * progress(frame, 10, 24),
+            height: 2,
+            background: C.terracotta,
+          }}
+        />
+      </div>
+      <InkText
+        lines={lines}
+        rowTops={lines.map((_, r) => titleTop + r * TITLE_P)}
+        firstIndex={0}
+        mode="line"
+        fs={TITLE_FS}
+        P={TITLE_P}
+        baseOff={TITLE_P * 0.7}
+        align="center"
+        family={MESSIRI}
+        color={C.rust}
+        marks={() => ({ weight: 600, tintAt: null, underlineAt: null })}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: fleuronTop,
+          left: SAFE_BOX.x,
+          width: SAFE_BOX.w,
+          display: "flex",
+          justifyContent: "center",
+          opacity: fl,
+          transform: `translateY(${(1 - fl) * 10}px)`,
+        }}
+      >
+        <Fleuron size={64} />
+      </div>
+    </AbsoluteFill>
   );
 };
