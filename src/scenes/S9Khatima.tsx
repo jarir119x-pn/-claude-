@@ -71,7 +71,6 @@ const Cover: React.FC = () => {
         inset: 0,
         perspective: 2600,
         perspectiveOrigin: `${spine}px 50%`,
-        zIndex: 5,
       }}
     >
       <div

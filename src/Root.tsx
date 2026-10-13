@@ -37,7 +37,9 @@ export const Muhasaba: React.FC<Props> = ({ showSafeArea }) => (
   <AbsoluteFill style={{ backgroundColor: C.linen }}>
     <Linen total={TOTAL_FRAMES} />
     <BookStack />
-    {/* كل مشهد صفحة، والانتقال بينها تقليب صفحة */}
+    {/* كل مشهد صفحة، والانتقال بينها تقليب صفحة.
+        isolation يحصر z-index الداخلي حتى تبقى طبقات الضوء والتلاشي فوق الصفحات */}
+    <AbsoluteFill style={{ isolation: "isolate" }}>
     <TransitionSeries>
       {PAGES.flatMap((p, i) => {
         const Page = COMPONENTS[p.id];
@@ -58,6 +60,7 @@ export const Muhasaba: React.FC<Props> = ({ showSafeArea }) => (
         return items;
       })}
     </TransitionSeries>
+    </AbsoluteFill>
     <WindowLight total={TOTAL_FRAMES} />
     <WarmVignette />
     <Grain />
