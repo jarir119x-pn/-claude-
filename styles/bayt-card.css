@@ -1,0 +1,189 @@
+/* نموذج بطاقة البيت — أنماط فوق design/bundle.css. كل لون وقياس من tokens.css. */
+
+/* نقش الظلّ العباسي: zill نهارًا، ويختفي zill على الليل فيصير khatt-strong */
+:root { --naqsh-zill: var(--zill); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --naqsh-zill: var(--khatt-strong); } }
+:root[data-theme="dark"] { --naqsh-zill: var(--khatt-strong); }
+
+/* ———— تاج المقرنص: أعلى الشاشة الرئيسية، بارتفاع يُجرَّب ٤٨ أو ٦٤ ———— */
+.crown { --crown-h: 48px; height: var(--crown-h); }
+.crown.zh-muqarnas::before { -webkit-mask-size: calc(var(--crown-h) / 2) var(--crown-h); mask-size: calc(var(--crown-h) / 2) var(--crown-h); }
+
+/* ———— الافتتاح: شمسة تُرسم بالذهب ثم تمتلئ، في أقل من ثانية ———— */
+.splash {
+  position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: var(--space-4);
+  background: var(--lazaward-deep); color: var(--tibr); cursor: pointer;
+  animation: splash-out 150ms linear 800ms forwards;
+}
+.splash.is-leaving { animation: splash-out 120ms linear forwards; }
+.splash__shamsa { width: 120px; height: 120px; }
+.splash__line { fill: none; stroke: currentColor; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 450ms cubic-bezier(.2, .7, .2, 1) forwards; }
+.splash__core { fill: currentColor; opacity: 0; animation: fill-in 250ms linear 400ms forwards; }
+.splash__name { margin: 0; font-family: var(--font-kufi); font-size: 44px; line-height: 60px; font-weight: 600; color: var(--on-deep); opacity: 0; animation: fill-in 300ms linear 300ms forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fill-in { to { opacity: 1; } }
+@keyframes splash-out { to { opacity: 0; visibility: hidden; } }
+
+.page {
+  --bayt-size: 19px;
+  --bayt-lh: 35px;
+  box-sizing: border-box;
+  max-width: 720px;
+  margin-inline: auto;
+  padding-block: var(--space-4) var(--space-12);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: var(--space-4);
+}
+.page *, .page *::before, .page *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+.page > *, .lab > *, .lab__block > * { min-width: 0; }
+
+/* ———— الشريط العلوي ———— */
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.bar__title { font-family: var(--font-kufi); font-size: 22px; line-height: 32px; font-weight: 600; margin: 0; }
+.bar__tools { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.tool {
+  min-height: 44px; padding: 0 var(--space-3);
+  font-family: var(--font-ui); font-size: 14px; font-weight: 600;
+  background: transparent; color: var(--midad);
+  border: var(--border-hair) solid var(--khatt-strong); border-radius: var(--radius-0);
+  cursor: pointer;
+}
+.tool[aria-pressed="false"] { color: var(--midad-muted); border-style: dashed; }
+
+/* ———— البطاقة ———— */
+.card { max-width: none; width: 100%; display: grid; gap: var(--space-4); }
+.is-compact .card { padding: var(--space-6) 14px var(--space-4); }
+.card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.card__meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); min-width: 0; }
+.card__poet { font-family: var(--font-kufi); font-size: 16px; line-height: 24px; color: var(--midad-muted); }
+.card__bahr { font-size: 14px; line-height: 22px; color: var(--midad-muted); }
+.card__bahr::before { content: "· "; }
+.card__title { font-family: var(--font-kufi); font-size: 24px; line-height: 36px; font-weight: 600; margin: 0; text-wrap: balance; }
+
+/* الثوب الأندلسي: الإطار الذهبي بشمستيه، والعنوان واسم الشاعر بالمغربي (لا أصغر من ٢٤) */
+.is-compact .card--andalus { padding-top: var(--space-8); }
+.card--andalus .card__head { padding-inline: var(--space-6); }
+.card--andalus .card__poet { font-family: var(--font-maghribi); font-size: 24px; line-height: 40px; }
+.card--andalus .card__title { font-family: var(--font-maghribi); font-size: 28px; line-height: 52px; font-weight: 400; }
+.card .zh-bayt { font-size: var(--bayt-size); line-height: var(--bayt-lh); width: 100%; }
+
+/* العجز المحجوب: يحتفظ بمكانه، وخطّ متقطّع يدلّ عليه */
+.card__slot { position: relative; display: block; min-width: 0; }
+.card__slot::after {
+  content: ""; position: absolute; inset-inline: 20%; top: 50%;
+  border-top: var(--border-hair) dashed var(--khatt-strong);
+  transition: opacity 150ms linear;
+}
+.card__slot.is-shown::after { opacity: 0; }
+.card__ajuz { clip-path: inset(0 0 0 100%); }
+
+/* كشف العجز كالتذهيب: الحروف تُرسم بخطّ ذهبي من اليمين، ثم يمتلئ المداد */
+.card__slot.is-shown .card__ajuz {
+  clip-path: inset(0);
+  -webkit-text-stroke-width: .6px;
+  animation: tadhhib 320ms cubic-bezier(.2, .7, .2, 1) both;
+}
+@keyframes tadhhib {
+  0%   { clip-path: inset(0 0 0 100%); color: transparent; -webkit-text-stroke-color: var(--dhahab); }
+  55%  { clip-path: inset(0);         color: transparent; -webkit-text-stroke-color: var(--dhahab); }
+  100% { clip-path: inset(0);         color: var(--midad); -webkit-text-stroke-color: transparent; }
+}
+
+.card__reveal { width: 100%; min-height: 48px; justify-content: center; }
+
+/* ———— حاشية البطاقة: نقش في القاعدة لا تحت الأبيات ———— */
+/* المسارات صريحة: url() داخل متغيّرات bundle.css يُحسب من هذا الملف لا من design/ */
+/* المشرق: صفّ النقط المحفورة بالظلّ */
+.card__foot { height: 16px; background: var(--naqsh-zill);
+  -webkit-mask: url("../design/ornaments/drill-holes.svg") center 0 / 48px 48px repeat-x; mask: url("../design/ornaments/drill-holes.svg") center 0 / 48px 48px repeat-x; }
+/* الأندلس: الإزار المسنّن، خزف ثابت الألوان */
+.card--andalus .card__foot { height: 21px; -webkit-mask: none; mask: none;
+  background: url("../design/ornaments/izar-crest.svg") center 0 / 18px 21px repeat-x; }
+/* ليلًا يبدو الإزار شريطًا فاتحًا فاقعًا، فتحلّ محلّه الضفيرة بالذهب */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .page:not(.is-izar-night) .card--andalus .card__foot {
+    height: 20px; background: var(--dhahab);
+    -webkit-mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; }
+}
+:root[data-theme="dark"] .page:not(.is-izar-night) .card--andalus .card__foot {
+  height: 20px; background: var(--dhahab);
+  -webkit-mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; }
+
+/* ———— أزرار التقييم: تختلف في الإضاءة والأيقونة والكلمة ———— */
+/* الأوسط محايد، فلا يتجاور القرمز والزمرّد */
+.rate { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.rate__btn {
+  position: relative; min-height: 48px; padding: 0 var(--space-2);
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1);
+  font-family: var(--font-ui); font-size: 16px; font-weight: 600;
+  border: var(--border-hair) solid; border-radius: var(--radius-0); cursor: pointer;
+}
+.rate__btn::after { content: ""; position: absolute; inset: 4px; border: var(--border-hair) solid currentColor; opacity: .35; pointer-events: none; }
+.rate__btn svg { width: 20px; height: 20px; flex: none; }
+.rate__btn--nasitu { background: var(--qirmiz); border-color: var(--qirmiz); color: var(--on-fill); }
+.rate__btn--taraddadtu { background: transparent; border-color: var(--khatt-strong); color: var(--midad); }
+.rate__btn--ataqtu { background: var(--zumurrud-soft); border-color: var(--zumurrud); color: var(--zumurrud-ink); }
+.rate__btn:focus-visible, .tool:focus-visible, .seg__btn:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--raqq);
+}
+
+/* ———— التنقل ———— */
+.steps { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.steps .zh-btn { min-height: 48px; justify-content: center; }
+.status { margin: 0; font-size: 14px; line-height: 22px; color: var(--midad-muted); text-align: center; }
+
+/* ———— لوحة التجربة ———— */
+.lab { display: grid; gap: var(--space-6); margin-top: var(--space-6); }
+.lab__head { display: grid; gap: var(--space-1); }
+.lab__title { font-family: var(--font-kufi); font-size: 22px; line-height: 32px; font-weight: 600; margin: 0; }
+.lab__block { display: grid; gap: var(--space-3); }
+.lab__label { font-size: 17px; line-height: 28px; font-weight: 600; margin: 0; }
+.lab__note { margin: 0; font-size: 14px; line-height: 22px; color: var(--midad-muted); }
+
+.seg { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.seg__btn {
+  min-height: 44px; min-width: 44px; padding: 0 var(--space-3);
+  font-family: var(--font-ui); font-size: 15px; font-weight: 600;
+  background: transparent; color: var(--lazaward-ink);
+  border: var(--border-hair) solid var(--khatt-strong); border-radius: var(--radius-0); cursor: pointer;
+}
+.seg__btn[aria-pressed="true"] { background: var(--lazaward); border-color: var(--lazaward); color: var(--on-fill); }
+
+.lab__action { justify-self: start; min-height: 44px; }
+.check { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: 15px; cursor: pointer; }
+.check input { width: 20px; height: 20px; accent-color: var(--lazaward); margin: 0; }
+
+.table-wrap { overflow-x: auto; }
+.fit { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
+.fit th, .fit td { border: var(--border-hair) solid var(--khatt); padding: var(--space-2) var(--space-1); text-align: center; white-space: nowrap; }
+.fit thead th { background: var(--jiss); font-weight: 600; }
+.fit tbody th { text-align: start; font-weight: 500; white-space: nowrap; }
+.fit .is-fit { color: var(--zumurrud-ink); }
+.fit .is-broken { color: var(--qirmiz-ink); background: var(--qirmiz-soft); }
+.fit .is-current { outline: 2px solid var(--dhahab); outline-offset: -2px; }
+
+.icons { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-4); }
+.icon-tile { margin: 0; display: grid; justify-items: center; gap: var(--space-1); }
+.icon-tile__face {
+  width: var(--tile); height: var(--tile); display: grid; place-items: center;
+  background: var(--lazaward-deep);
+}
+.icon-tile .zh-ornament { color: var(--tibr); width: calc(var(--tile) * .8); height: calc(var(--tile) * .8); }
+
+.rabat-sample { display: grid; gap: var(--space-2); max-width: var(--shatr-w, 100%); margin-inline: auto; width: 100%;
+  padding-block: var(--space-3); border-block: var(--border-hair) solid var(--khatt);
+  font-family: var(--font-maghribi); font-size: 24px; line-height: 52px; text-align: center; }
+.icon-tile figcaption { font-size: 13px; color: var(--midad-muted); }
+
+/* حساب العرض الطبيعي للشطر */
+.measure { position: fixed; visibility: hidden; white-space: nowrap; font-family: var(--font-matn); left: 0; top: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card__slot.is-shown .card__ajuz { animation: none; -webkit-text-stroke-width: 0; }
+  .card__slot::after { transition: none; }
+  .splash__line { animation: none; stroke-dashoffset: 0; }
+  .splash__core, .splash__name { animation: none; opacity: 1; }
+}

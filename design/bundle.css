@@ -1,0 +1,173 @@
+/* الخطوط من ملفات النظام (fonts/) عبر tokens.json، لا من Google Fonts. */
+
+/* الزوراء والحمراء — مكوّنات CSS خالصة، بادئتها zh- . كل لون وقياس من tokens.css. */
+
+:root {
+  --zh-khatam: url("ornaments/khatam-8.svg");
+  --zh-sebka: url("ornaments/sebka.svg");
+  --zh-dafira: url("ornaments/dafira-band.svg");
+  --zh-samarra: url("ornaments/samarra-bevel.svg");
+  --zh-shamsa: url("ornaments/shamsa.svg");
+  --zh-arch: url("ornaments/arch-horseshoe.svg");
+  --zh-muqarnas: url("ornaments/muqarnas-band.svg");
+  --zh-malwiya: url("ornaments/malwiya.svg");
+  --zh-arch-pointed: url("ornaments/arch-pointed.svg");
+  --zh-beads-band: url("ornaments/beads-band.svg");
+  --zh-hazarbaf: url("ornaments/hazarbaf.svg");
+  --zh-iwan: url("ornaments/iwan.svg");
+  --zh-khatam-woven: url("ornaments/khatam-woven.svg");
+  --zh-muqarnas-dome: url("ornaments/muqarnas-dome.svg");
+  --zh-drill: url("ornaments/drill-holes.svg");
+  --zh-samarra-vine: url("ornaments/samarra-vine.svg");
+  --zh-arch-lobed: url("ornaments/arch-lobed.svg");
+  --zh-shamsiyya: url("ornaments/shamsiyya.svg");
+  --zh-izar-crest: url("ornaments/izar-crest.svg");
+  --zh-zellige-diamond: url("ornaments/zellige-diamond.svg");
+  --zh-zellige-khatam: url("ornaments/zellige-khatam.svg");
+}
+
+body { margin: 0; background: var(--raqq); color: var(--midad); font-family: var(--font-matn); }
+.zh { direction: rtl; font-family: var(--font-matn); color: var(--midad); }
+.zh-stage { direction: rtl; padding: var(--space-6); display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: flex-start; }
+
+/* ———— الزخرفة: أي عنصر يأخذ لونه من color عبر القناع ———— */
+.zh-ornament { display: inline-block; background: currentColor; -webkit-mask: var(--zh-shamsa) center / contain no-repeat; mask: var(--zh-shamsa) center / contain no-repeat; width: 48px; height: 48px; color: var(--dhahab); }
+.zh-ornament--samarra { -webkit-mask-image: var(--zh-samarra); mask-image: var(--zh-samarra); }
+.zh-ornament--malwiya { -webkit-mask-image: var(--zh-malwiya); mask-image: var(--zh-malwiya); width: 120px; height: 192px; }
+
+/* حقل نقش متكرر: الخاتم أو الشبكة (السبكة). القناع فوق لون الحقل */
+.zh-field { position: relative; background: var(--lazaward-deep); color: var(--dhahab); overflow: hidden; }
+.zh-field::before { content: ""; position: absolute; inset: 0; background: currentColor; opacity: .55;
+  -webkit-mask: var(--zh-khatam) 0 0 / 64px 64px repeat; mask: var(--zh-khatam) 0 0 / 64px 64px repeat; }
+.zh-field--sebka::before { -webkit-mask-image: var(--zh-sebka); mask-image: var(--zh-sebka); -webkit-mask-size: 40px 40px; mask-size: 40px 40px; }
+.zh-field--quiet { background: var(--jiss); color: var(--khatt); }
+.zh-field > * { position: relative; }
+
+/* ———— الشريط: عنوان كوفي بين خطّين شعريين وضفيرة ———— */
+.zh-band { text-align: center; color: var(--dhahab); }
+.zh-band__braid { height: 20px; background: currentColor; -webkit-mask: var(--zh-dafira) 0 0 / auto 20px repeat-x; mask: var(--zh-dafira) 0 0 / auto 20px repeat-x; }
+.zh-band__title { font-family: var(--font-kufi); font-size: 44px; line-height: 60px; font-weight: 600; color: var(--midad); margin: var(--space-3) 0; }
+.zh-band__title--maghribi { font-family: var(--font-maghribi); font-size: 48px; line-height: 80px; font-weight: 400; }
+.zh-maghribi { font-family: var(--font-maghribi); font-size: 28px; line-height: 52px; }
+.zh-band__label { font-family: var(--font-kufi); font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: .02em; color: var(--dhahab-ink); }
+
+/* ———— الفاصل: خطّ — خاتم — خطّ ———— */
+.zh-divider { display: flex; align-items: center; gap: var(--space-3); color: var(--dhahab); }
+.zh-divider::before, .zh-divider::after { content: ""; flex: 1; height: var(--border-hair); background: currentColor; }
+.zh-divider__star { width: 20px; height: 20px; background: currentColor; -webkit-mask: var(--zh-shamsa) center / contain no-repeat; mask: var(--zh-shamsa) center / contain no-repeat; }
+
+/* ———— الزر ———— */
+.zh-btn { font-family: var(--font-ui); font-size: 16px; line-height: 24px; font-weight: 600; padding: var(--space-3) var(--space-6); border-radius: var(--radius-0); border: var(--border-hair) solid var(--lazaward); background: var(--lazaward); color: var(--on-fill); cursor: pointer; position: relative; }
+.zh-btn::after { content: ""; position: absolute; inset: 4px; border: var(--border-hair) solid currentColor; opacity: .45; pointer-events: none; }
+.zh-btn:hover { background: var(--lazaward-deep); border-color: var(--lazaward-deep); color: var(--on-deep); }
+.zh-btn--secondary { background: transparent; color: var(--lazaward-ink); border-color: var(--dhahab); }
+.zh-btn--secondary:hover { background: var(--lazaward-soft); color: var(--lazaward-ink); border-color: var(--dhahab); }
+.zh-btn--qirmiz { background: var(--qirmiz); border-color: var(--qirmiz); }
+.zh-btn--qirmiz:hover { background: var(--qirmiz); border-color: var(--midad); color: var(--on-fill); }
+.zh-btn { display: inline-flex; align-items: center; gap: var(--space-2); }
+.zh-btn svg, .zh-icon { width: 20px; height: 20px; flex: none; }
+.zh-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--raqq); }
+
+/* ———— الشارة ———— */
+.zh-badge { display: inline-block; font-family: var(--font-ui); font-size: 14px; line-height: 20px; font-weight: 500; padding: 2px var(--space-2); border-radius: var(--radius-sm); background: var(--lazaward-soft); color: var(--lazaward-ink); }
+.zh-badge--qirmiz { background: var(--qirmiz-soft); color: var(--qirmiz-ink); }
+.zh-badge--zumurrud { background: var(--zumurrud-soft); color: var(--zumurrud-ink); }
+
+/* ———— اللوح: إطار مزدوج بالذهب كإطار الصفحة المذهّبة ———— */
+.zh-lawh { background: var(--raqq-raised); border: var(--border-rule) solid var(--dhahab); outline: var(--border-hair) solid var(--dhahab); outline-offset: calc(-1 * (var(--border-rule) + var(--space-1) + var(--border-hair))); padding: var(--space-8) var(--space-6) var(--space-6); max-width: 360px; position: relative; }
+.zh-lawh__corner { position: absolute; top: 12px; width: 20px; height: 20px; background: var(--dhahab); -webkit-mask: var(--zh-shamsa) center / contain no-repeat; mask: var(--zh-shamsa) center / contain no-repeat; }
+.zh-lawh__corner--start { right: 12px; } .zh-lawh__corner--end { left: 12px; }
+.zh-lawh__kicker { font-family: var(--font-kufi); font-size: 16px; line-height: 24px; color: var(--dhahab-ink); }
+.zh-lawh__title { font-family: var(--font-matn); font-size: 30px; line-height: 52px; font-weight: 600; margin: 0; }
+.zh-lawh__body { font-size: 20px; line-height: 36px; margin: var(--space-2) 0 0; }
+
+/* ———— المحراب: إطار العقد ———— */
+.zh-mihrab { width: 240px; padding: var(--space-6); padding-top: 96px; text-align: center; background: var(--lazaward-deep); color: var(--on-deep);
+  border-radius: var(--radius-arch) var(--radius-arch) var(--radius-0) var(--radius-0) / 150px 150px 0 0;
+  box-shadow: inset 0 0 0 var(--border-rule) var(--dhahab), inset 0 0 0 calc(var(--border-rule) + var(--space-1)) var(--lazaward-deep), inset 0 0 0 calc(var(--border-rule) + var(--space-1) + var(--border-hair)) var(--dhahab); }
+.zh-mihrab__title { font-family: var(--font-kufi); font-size: 32px; line-height: 44px; font-weight: 600; color: var(--tibr); margin: var(--space-3) 0 var(--space-2); }
+.zh-mihrab__body { font-size: 18px; line-height: 32px; margin: 0; }
+
+/* ———— الشمسة: وسام رقمي ———— */
+.zh-shamsa { position: relative; display: inline-grid; place-items: center; width: 96px; height: 96px; color: var(--dhahab); }
+.zh-shamsa::before { content: ""; position: absolute; inset: 0; background: currentColor; -webkit-mask: var(--zh-shamsa) center / contain no-repeat; mask: var(--zh-shamsa) center / contain no-repeat; }
+.zh-shamsa__num { position: relative; font-family: var(--font-kufi); font-size: 22px; line-height: 1; font-weight: 600; color: var(--on-fill); background: var(--lazaward); width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; }
+
+/* ———— البيت: شطران متقابلان ———— */
+.zh-bayt { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: var(--space-4); font-family: var(--font-matn); font-size: 24px; line-height: 44px; color: var(--midad); padding: var(--space-4) 0; max-width: 840px; margin-inline: auto; border-block: var(--border-hair) solid var(--khatt); }
+.zh-bayt__shatr { display: block; text-align: justify; text-align-last: justify; }
+.zh-bayt__sep { width: 16px; height: 16px; background: var(--dhahab); -webkit-mask: var(--zh-shamsa) center / contain no-repeat; mask: var(--zh-shamsa) center / contain no-repeat; }
+@media (max-width: 520px) { .zh-bayt { grid-template-columns: 1fr; text-align: center; } .zh-bayt__sep { justify-self: center; } .zh-bayt__shatr { text-align: center !important; text-align-last: center !important; } }
+
+/* ———— المقرنص: شريط طبقات من الحنايا يتدلّى من أعلى ———— */
+.zh-muqarnas { position: relative; height: 96px; color: var(--dhahab); }
+.zh-muqarnas::before { content: ""; position: absolute; inset: 0; background: currentColor;
+  -webkit-mask: var(--zh-muqarnas) center top / 48px 96px repeat-x; mask: var(--zh-muqarnas) center top / 48px 96px repeat-x; }
+.zh-muqarnas--lg { height: 144px; }
+.zh-muqarnas--lg::before { -webkit-mask-size: 72px 144px; mask-size: 72px 144px; }
+.zh-muqarnas--on-deep { background: var(--lazaward-deep); }
+
+/* ———— الجانب العباسي: زخرفة بالظلّ على الطين ———— */
+/* حقول النقش العباسية: أرضها طين (ajurr أو turab) ونقشها ظلّ (zill)، بلا ألوان أخرى */
+.zh-field--woven::before { -webkit-mask-image: var(--zh-khatam-woven); mask-image: var(--zh-khatam-woven); -webkit-mask-size: 96px 96px; mask-size: 96px 96px; opacity: .8; }
+.zh-field--hazarbaf { background: var(--ajurr); color: var(--zill); }
+.zh-field--hazarbaf::before { -webkit-mask-image: var(--zh-hazarbaf); mask-image: var(--zh-hazarbaf); -webkit-mask-size: 144px 144px; mask-size: 144px 144px; opacity: .75; }
+.zh-field--samarra { background: var(--turab); color: var(--zill); }
+.zh-field--samarra::before { -webkit-mask-image: var(--zh-samarra-vine); mask-image: var(--zh-samarra-vine); -webkit-mask-size: 104px 180px; mask-size: 104px 180px; opacity: .7; }
+.zh-field--bevel { background: var(--turab); color: var(--zill); }
+.zh-field--bevel::before { -webkit-mask-image: var(--zh-samarra); mask-image: var(--zh-samarra); -webkit-mask-size: 96px 144px; mask-size: 96px 144px; opacity: .85; }
+/* النقط المحفورة: ثقوب المثقب في فراغات جصّ سامرّاء؛ تُضاف إلى أي حقل عباسيّ */
+.zh-drill::after { content: ""; position: absolute; inset: 0; background: var(--zill); -webkit-mask: var(--zh-drill) 0 0 / 64px 64px repeat; mask: var(--zh-drill) 0 0 / 64px 64px repeat; opacity: .8; pointer-events: none; }
+.zh-drill-row { height: 16px; color: var(--zill); background: currentColor; -webkit-mask: var(--zh-drill) 0 0 / 48px 48px repeat-x; mask: var(--zh-drill) 0 0 / 48px 48px repeat-x; }
+
+/* شريط الحبيبات: حدّ أو فاصل من جصّ سامرّاء */
+.zh-beads { height: 20px; color: var(--dhahab); background: currentColor; -webkit-mask: var(--zh-beads-band) 0 0 / auto 20px repeat-x; mask: var(--zh-beads-band) 0 0 / auto 20px repeat-x; }
+
+/* العقد المدبّب: إطار صورة أو نافذة على هيئة عقد بغدادي */
+.zh-arch-pointed { display: block; aspect-ratio: 2 / 3; width: 240px; max-width: 100%; object-fit: cover; -webkit-mask: var(--zh-arch-pointed) center / 100% 100% no-repeat; mask: var(--zh-arch-pointed) center / 100% 100% no-repeat; background: var(--ajurr); }
+
+/* الإيوان والقبّة المقرنصة: علامتان منفردتان */
+.zh-ornament--iwan { -webkit-mask-image: var(--zh-iwan); mask-image: var(--zh-iwan); width: 144px; height: 204px; }
+.zh-ornament--qubba { -webkit-mask-image: var(--zh-muqarnas-dome); mask-image: var(--zh-muqarnas-dome); width: 192px; height: 192px; }
+
+/* ———— السواد: شارة المرتبة العباسية ———— */
+/* للخليفة وكبار القوّاد ومواضع الدولة وحدها: حقل sawad بإطار فضّي مزدوج، وكتابة بالفضة، ولمسة قرمز */
+.zh-sawad { position: relative; background: var(--sawad); color: var(--fidda); text-align: center; max-width: 360px;
+  padding: var(--space-8) var(--space-6) var(--space-6); border: var(--border-rule) solid var(--fidda);
+  outline: var(--border-hair) solid var(--fidda); outline-offset: calc(-1 * (var(--border-rule) + var(--space-1) + var(--border-hair))); }
+.zh-sawad__kicker { font-family: var(--font-kufi); font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: .02em; }
+.zh-sawad__title { font-family: var(--font-kufi); font-size: 32px; line-height: 44px; font-weight: 600; margin: var(--space-2) 0; }
+.zh-sawad__body { font-family: var(--font-matn); font-size: 18px; line-height: 32px; margin: 0; }
+.zh-sawad__seal { display: block; width: 12px; height: 12px; margin: var(--space-4) auto 0; background: var(--qirmiz); transform: rotate(45deg); }
+
+/* ———— البدائل العباسية: الإطار والشريط بالظلّ لا بالذهب ———— */
+.zh-band--abbasi { color: var(--zill); }
+.zh-band--abbasi .zh-band__braid { -webkit-mask-image: var(--zh-beads-band); mask-image: var(--zh-beads-band); -webkit-mask-size: auto 20px; mask-size: auto 20px; }
+.zh-band--abbasi .zh-band__label { color: var(--midad-muted); }
+.zh-lawh--abbasi { border-color: var(--zill); outline-color: var(--khatt); }
+.zh-lawh--abbasi .zh-lawh__corner { display: none; }
+.zh-lawh--abbasi .zh-lawh__kicker { color: var(--midad-muted); }
+
+/* ———— الجانب الأندلسي ———— */
+
+/* الإزار: زليج يعلوه شريط مسنّن بين حدّين أخضرين؛ أسفل الصفحة أو الملصق، لا نصّ فوقه.
+   الزليج خزف: صوره بألوان ثابتة لا تتبدّل ليلًا. */
+.zh-izar { display: block; }
+.zh-izar__crest { height: 28px; background: var(--zh-izar-crest) 0 0 / 24px 28px repeat-x; }
+.zh-izar__tiles { height: var(--zh-izar-height, 128px); background: var(--zh-zellige-diamond) 0 0 / 192px 192px repeat; border-bottom: var(--space-1) solid var(--zumurrud); }
+.zh-izar--khatam .zh-izar__tiles { background-image: var(--zh-zellige-khatam); background-size: 96px 96px; }
+
+/* العقد المفصّص: قناع لصورة أو حقل، نظير zh-arch-pointed العباسي */
+.zh-arch-lobed { display: block; aspect-ratio: 5 / 7; width: 240px; max-width: 100%; object-fit: cover; background: var(--lazaward-deep);
+  -webkit-mask: var(--zh-arch-lobed) center / 100% 100% no-repeat; mask: var(--zh-arch-lobed) center / 100% 100% no-repeat; }
+
+/* الشمسية: شبّاك نجميّ في عقد، علامة منفردة بلون color */
+.zh-ornament--shamsiyya { -webkit-mask-image: var(--zh-shamsiyya); mask-image: var(--zh-shamsiyya); width: 96px; height: 144px; }
+
+/* الأبلق: صنج قرمز وعاج بفواصل ذهبية، حدود حادّة بلا تدرّج. العاج on-fill ثابت ليلًا كالحجر. */
+.zh-ablaq { height: var(--space-4); border-block: var(--border-hair) solid var(--dhahab);
+  background: repeating-linear-gradient(90deg, var(--qirmiz) 0 var(--space-6), var(--dhahab) var(--space-6) calc(var(--space-6) + 1px), var(--on-fill) calc(var(--space-6) + 1px) calc(var(--space-12) - 1px), var(--dhahab) calc(var(--space-12) - 1px) var(--space-12)); }
+
+/* حقل الحمراء: سور صامت. نقشه بـ zill، وكتابته الكبيرة بـ on-tin */
+.zh-field--hamra { background: var(--hamra); color: var(--on-tin); }
+.zh-field--hamra::before { display: none; }

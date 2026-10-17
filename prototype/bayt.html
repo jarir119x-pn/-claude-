@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>بطاقة البيت</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="../design/bundle.css">
+<link rel="stylesheet" href="../styles/bayt-card.css">
+</head>
+<body class="zh">
+<div class="splash" id="splash" role="button" tabindex="0" aria-label="تخطَّ الافتتاح">
+  <svg class="splash__shamsa" viewBox="0 0 120 120" aria-hidden="true">
+    <circle class="splash__line" cx="60" cy="60" r="56" stroke-width="2" pathLength="1"></circle>
+    <circle class="splash__line" cx="60" cy="60" r="50" stroke-width="1" pathLength="1"></circle>
+    <polygon class="splash__line" points="60.00,14.00 65.85,30.58 77.60,17.50 76.67,35.06 92.53,27.47 84.94,43.33 102.50,42.40 89.42,54.15 106.00,60.00 89.42,65.85 102.50,77.60 84.94,76.67 92.53,92.53 76.67,84.94 77.60,102.50 65.85,89.42 60.00,106.00 54.15,89.42 42.40,102.50 43.33,84.94 27.47,92.53 35.06,76.67 17.50,77.60 30.58,65.85 14.00,60.00 30.58,54.15 17.50,42.40 35.06,43.33 27.47,27.47 43.33,35.06 42.40,17.50 54.15,30.58" stroke-width="2" pathLength="1"></polygon>
+    <polygon class="splash__core" points="60.00,35.96 67.04,43.00 77.00,43.00 77.00,52.96 84.04,60.00 77.00,67.04 77.00,77.00 67.04,77.00 60.00,84.04 52.96,77.00 43.00,77.00 43.00,67.04 35.96,60.00 43.00,52.96 43.00,43.00 52.96,43.00"></polygon>
+  </svg>
+  <p class="splash__name">حفظ الشعر</p>
+</div>
+<div class="crown zh-muqarnas" id="crown" aria-hidden="true"></div>
+<main class="page is-compact" id="page">
+
+  <header class="bar">
+    <h1 class="bar__title">مراجعة اليوم</h1>
+    <div class="bar__tools">
+      <button type="button" class="tool" id="tashkeel-toggle" aria-pressed="true">التشكيل ظاهر</button>
+      <button type="button" class="tool" id="theme-toggle">المظهر: تلقائي</button>
+    </div>
+  </header>
+
+  <article class="zh-lawh zh-lawh--abbasi card" id="card">
+    <span class="zh-lawh__corner zh-lawh__corner--start" aria-hidden="true"></span>
+    <span class="zh-lawh__corner zh-lawh__corner--end" aria-hidden="true"></span>
+    <div class="card__head">
+      <div class="card__meta"><span class="card__poet" id="card-poet"></span><span class="card__bahr" id="card-bahr"></span></div>
+      <span class="zh-badge" id="card-count"></span>
+    </div>
+    <h2 class="card__title" id="card-title"></h2>
+
+    <div class="zh-bayt" id="bayt">
+      <span class="zh-bayt__shatr" id="sadr"></span>
+      <span class="zh-bayt__sep" aria-hidden="true"></span>
+      <span class="card__slot" id="ajuz-slot">
+        <span class="zh-bayt__shatr card__ajuz" id="ajuz"></span>
+      </span>
+    </div>
+
+    <button type="button" class="zh-btn card__reveal" id="reveal">اكشف العجز</button>
+
+    <div class="rate" id="rate" role="group" aria-label="قيّم حفظك للبيت" hidden>
+      <button type="button" class="rate__btn rate__btn--nasitu" data-rating="نسيته">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M6 6L18 18M18 6L6 18"></path></svg>
+        نسيته
+      </button>
+      <button type="button" class="rate__btn rate__btn--taraddadtu" data-rating="تردّدت">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 6V18M15 6V18"></path></svg>
+        تردّدت
+      </button>
+      <button type="button" class="rate__btn rate__btn--ataqtu" data-rating="أتقنته">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M4 12L9.5 17.5L20 7"></path></svg>
+        أتقنته
+      </button>
+    </div>
+    <div class="card__foot" aria-hidden="true"></div>
+  </article>
+
+  <nav class="steps" aria-label="التنقل بين الأبيات">
+    <button type="button" class="zh-btn zh-btn--secondary" id="prev">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 12H19M13 6L19 12L13 18"></path></svg>
+      السابق
+    </button>
+    <button type="button" class="zh-btn zh-btn--secondary" id="next">
+      التالي
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M19 12H5M11 6L5 12L11 18"></path></svg>
+    </button>
+  </nav>
+  <p class="status" id="status" aria-live="polite">التقييم هنا للشكل فقط، ولا يُحفظ.</p>
+
+  <section class="lab" aria-labelledby="lab-title">
+    <div class="zh-divider"><span class="zh-divider__star"></span></div>
+    <div class="lab__head">
+      <h2 class="lab__title" id="lab-title">لوحة التجربة</h2>
+      <p class="lab__note">للمسائل المفتوحة، وتُحذف بعد حسمها. الأبيات المشرقية بإطار الظل، والأندلسية بالإطار الذهبي.</p>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">١. حجم خط البيت</h3>
+      <div class="seg" id="size-picker" role="group" aria-label="حجم خط البيت">
+        <button type="button" class="seg__btn" data-size="18">١٨</button>
+        <button type="button" class="seg__btn" data-size="19">١٩</button>
+        <button type="button" class="seg__btn" data-size="20">٢٠</button>
+        <button type="button" class="seg__btn" data-size="24">٢٤ (الأصل)</button>
+        <button type="button" class="seg__btn" data-size="32">٣٢ (فحص التشكيل)</button>
+      </div>
+      <label class="check" for="compact-toggle">
+        <input type="checkbox" id="compact-toggle" checked>
+        حشو اللوح المخفّض على الهاتف
+      </label>
+      <p class="lab__note" id="width-note"></p>
+      <p class="lab__note">هل يتسع كل شطر لسطر واحد؟ ✓ يعني نعم، و✗ يعني أنه ينكسر. الرقم هو الفراغ المتبقي في أطول الشطرين بالبكسل، والسالب مقدار ما ينقص.</p>
+      <div class="table-wrap">
+        <table class="fit" id="fit-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">زخارف: تاج المقرنص</h3>
+      <p class="lab__note">تاج الشاشة الرئيسية، ويظهر هنا أعلى الصفحة للتجربة وحدها.</p>
+      <div class="seg" id="crown-picker" role="group" aria-label="ارتفاع تاج المقرنص">
+        <button type="button" class="seg__btn" data-crown="48">٤٨</button>
+        <button type="button" class="seg__btn" data-crown="64">٦٤</button>
+        <button type="button" class="seg__btn" data-crown="0">بلا تاج</button>
+      </div>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">زخارف: الافتتاح وحاشية البطاقة</h3>
+      <p class="lab__note">الافتتاح يظهر في أول فتح كل يوم، ويُتخطّى باللمس. وحاشية البطاقة: صفّ النقط المحفورة للمشرق، والإزار المسنّن للأندلس نهارًا، والضفيرة له ليلًا.</p>
+      <button type="button" class="zh-btn zh-btn--secondary lab__action" id="splash-replay">أعد عرض الافتتاح</button>
+      <label class="check" for="izar-night-toggle">
+        <input type="checkbox" id="izar-night-toggle">
+        الإزار ليلًا بدل الضفيرة (للمقارنة)
+      </label>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">٢. التشكيل الكامل مع Kufam</h3>
+      <p class="lab__note">اختر حجم ٣٢ ثم تنقّل بين الأبيات التسعة، وانظر إلى الشدّة مع الحركة والسكون والتنوين.</p>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">٣. Rabat في المتن بحجم ٢٤ (للعلم فقط)</h3>
+      <p class="lab__note">البيت الحالي بخط Rabat، في عرض الشطر نفسه الذي في البطاقة. عمود «Rabat ٢٤» في الجدول أعلاه يقيس الأبيات كلها به.</p>
+      <div class="rabat-sample" id="rabat-sample">
+        <span class="rabat-sample__shatr" id="rabat-sadr"></span>
+        <span class="rabat-sample__shatr" id="rabat-ajuz"></span>
+      </div>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">٤. الشمسة أيقونةً</h3>
+      <p class="lab__note">حجم ٤٨ هو حجم أيقونة الشاشة الرئيسية الفعلي على أغلب هواتف أندرويد.</p>
+      <div class="icons">
+        <figure class="icon-tile" style="--tile: 40px"><span class="icon-tile__face"><span class="zh-ornament"></span></span><figcaption>٤٠</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 48px"><span class="icon-tile__face"><span class="zh-ornament"></span></span><figcaption>٤٨</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 64px"><span class="icon-tile__face"><span class="zh-ornament"></span></span><figcaption>٦٤</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 96px"><span class="icon-tile__face"><span class="zh-ornament"></span></span><figcaption>٩٦</figcaption></figure>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="../src/bayt-card.js"></script>
+</body>
+</html>

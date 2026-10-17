@@ -1,0 +1,21 @@
+/* الزخارف: كل نقش في التطبيق يُختار في هذا الملف وحده.
+   لتغيير زخرفة غيّر سطرها هنا، ولا تكتب مسار زخرفة في ملف آخر.
+   المسارات صريحة من styles/ إلى design/ornaments/ (لا متغيّرات --zh-*).
+   استثناء واحد: شمسة الافتتاح مرسومة SVG داخل index.html لأنها تتحرّك. */
+
+/* ———— تاج الشاشة الرئيسية: المقرنص، المشترك بين العراق والحمراء ———— */
+.naqsh-taj { --taj-h: 48px; position: relative; height: var(--taj-h); color: var(--dhahab); }
+.naqsh-taj::before {
+  content: ""; position: absolute; inset: 0; background: currentColor;
+  -webkit-mask: url("../design/ornaments/muqarnas-band.svg") center top / calc(var(--taj-h) / 2) var(--taj-h) repeat-x;
+  mask: url("../design/ornaments/muqarnas-band.svg") center top / calc(var(--taj-h) / 2) var(--taj-h) repeat-x;
+}
+
+/* ———— فاصل صغير بين الأقسام: خطّ وشمسة وخطّ ———— */
+.naqsh-fasil { display: flex; align-items: center; gap: var(--space-3); color: var(--dhahab); }
+.naqsh-fasil::before, .naqsh-fasil::after { content: ""; flex: 1; height: var(--border-hair); background: currentColor; }
+.naqsh-fasil__najma {
+  width: 20px; height: 20px; background: currentColor;
+  -webkit-mask: url("../design/ornaments/shamsa.svg") center / contain no-repeat;
+  mask: url("../design/ornaments/shamsa.svg") center / contain no-repeat;
+}
