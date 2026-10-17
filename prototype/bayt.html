@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>بطاقة البيت</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="../design/bundle.css">
+<link rel="stylesheet" href="../styles/bayt-card.css">
+</head>
+<body class="zh">
+<main class="page is-compact" id="page">
+
+  <header class="bar">
+    <h1 class="bar__title">مراجعة اليوم</h1>
+    <div class="bar__tools">
+      <button type="button" class="tool" id="tashkeel-toggle" aria-pressed="true">التشكيل ظاهر</button>
+      <button type="button" class="tool" id="theme-toggle">المظهر: تلقائي</button>
+    </div>
+  </header>
+
+  <article class="zh-lawh zh-lawh--abbasi card" id="card">
+    <div class="card__head">
+      <div class="zh-lawh__kicker" id="card-meta"></div>
+      <span class="zh-badge" id="card-count"></span>
+    </div>
+    <h2 class="card__title" id="card-title"></h2>
+
+    <div class="zh-bayt" id="bayt">
+      <span class="zh-bayt__shatr" id="sadr"></span>
+      <span class="zh-bayt__sep" aria-hidden="true"></span>
+      <span class="card__slot" id="ajuz-slot">
+        <span class="zh-bayt__shatr card__ajuz" id="ajuz"></span>
+      </span>
+    </div>
+
+    <button type="button" class="zh-btn card__reveal" id="reveal">اكشف العجز</button>
+
+    <div class="rate" id="rate" role="group" aria-label="قيّم حفظك للبيت" hidden>
+      <button type="button" class="rate__btn rate__btn--nasitu" data-rating="نسيته">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M6 6L18 18M18 6L6 18"></path></svg>
+        نسيته
+      </button>
+      <button type="button" class="rate__btn rate__btn--taraddadtu" data-rating="تردّدت">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 6V18M15 6V18"></path></svg>
+        تردّدت
+      </button>
+      <button type="button" class="rate__btn rate__btn--ataqtu" data-rating="أتقنته">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M4 12L9.5 17.5L20 7"></path></svg>
+        أتقنته
+      </button>
+    </div>
+  </article>
+
+  <nav class="steps" aria-label="التنقل بين الأبيات">
+    <button type="button" class="zh-btn zh-btn--secondary" id="prev">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 12H19M13 6L19 12L13 18"></path></svg>
+      السابق
+    </button>
+    <button type="button" class="zh-btn zh-btn--secondary" id="next">
+      التالي
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M19 12H5M11 6L5 12L11 18"></path></svg>
+    </button>
+  </nav>
+  <p class="status" id="status" aria-live="polite">التقييم هنا للشكل فقط، ولا يُحفظ.</p>
+
+  <section class="lab" aria-labelledby="lab-title">
+    <div class="zh-divider"><span class="zh-divider__star"></span></div>
+    <div class="lab__head">
+      <h2 class="lab__title" id="lab-title">لوحة التجربة</h2>
+      <p class="lab__note">للمسائل المفتوحة الثلاث، وتُحذف بعد حسمها.</p>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">١. حجم خط البيت</h3>
+      <div class="seg" id="size-picker" role="group" aria-label="حجم خط البيت">
+        <button type="button" class="seg__btn" data-size="18">١٨</button>
+        <button type="button" class="seg__btn" data-size="19">١٩</button>
+        <button type="button" class="seg__btn" data-size="20">٢٠</button>
+        <button type="button" class="seg__btn" data-size="24">٢٤ (الأصل)</button>
+        <button type="button" class="seg__btn" data-size="32">٣٢ (فحص التشكيل)</button>
+      </div>
+      <label class="check" for="compact-toggle">
+        <input type="checkbox" id="compact-toggle" checked>
+        حشو اللوح المخفّض على الهاتف
+      </label>
+      <p class="lab__note" id="width-note"></p>
+      <p class="lab__note">هل يتسع كل شطر لسطر واحد؟ ✓ يعني نعم، و✗ يعني أنه ينكسر. الرقم هو الفراغ المتبقي في أطول الشطرين بالبكسل، والسالب مقدار ما ينقص.</p>
+      <div class="table-wrap">
+        <table class="fit" id="fit-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">٢. التشكيل الكامل مع Kufam</h3>
+      <p class="lab__note">اختر حجم ٣٢ ثم تنقّل بين الأبيات الستة، وانظر إلى الشدّة مع الحركة والسكون والتنوين.</p>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">٣. الملوية أيقونةً</h3>
+      <p class="lab__note">حجم ٤٨ هو حجم أيقونة الشاشة الرئيسية الفعلي على أغلب هواتف أندرويد.</p>
+      <div class="icons">
+        <figure class="icon-tile" style="--tile: 40px"><span class="icon-tile__face"><span class="zh-ornament zh-ornament--malwiya"></span></span><figcaption>٤٠</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 48px"><span class="icon-tile__face"><span class="zh-ornament zh-ornament--malwiya"></span></span><figcaption>٤٨</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 64px"><span class="icon-tile__face"><span class="zh-ornament zh-ornament--malwiya"></span></span><figcaption>٦٤</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 96px"><span class="icon-tile__face"><span class="zh-ornament zh-ornament--malwiya"></span></span><figcaption>٩٦</figcaption></figure>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="../src/bayt-card.js"></script>
+</body>
+</html>
