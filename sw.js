@@ -2,7 +2,7 @@
 
 // يخزّن ملفات التطبيق كلها عند أول فتح، فيعمل بعده دون إنترنت.
 // عند كل إصدار جديد: ارفع رقم CACHE_VERSION، وأضف إلى FILES كل ملف جديد.
-const CACHE_VERSION = 3;
+const CACHE_VERSION = 5;
 const CACHE = `hifz-alshir-v${CACHE_VERSION}`;
 
 const FILES = [
@@ -20,9 +20,11 @@ const FILES = [
   'src/parse.js',
   'src/poems.js',
   'src/srs.js',
+  'src/textimport.js',
   'src/entry.js',
   'src/library.js',
   'src/review.js',
+  'src/settings.js',
   'src/app.js',
   'icons/shamsa-192.png',
   'icons/shamsa-512.png',

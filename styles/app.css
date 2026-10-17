@@ -61,6 +61,12 @@ a.zh-btn { text-decoration: none; }
 .poem-row__title { font-family: var(--font-kufi); font-size: 20px; line-height: 30px; font-weight: 600; }
 .poem-row--andalus .poem-row__title { font-family: var(--font-maghribi); font-size: 24px; line-height: 40px; font-weight: 400; }
 .poem-row__meta { font-size: 14px; line-height: 22px; color: var(--midad-muted); }
+.poem-row__bayt { font-size: 15px; line-height: 26px; color: var(--midad-muted); }
+.finder { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--space-3); }
+.poem-group { display: grid; gap: var(--space-2); }
+.poem-group + .poem-group { margin-top: var(--space-4); }
+.poem-group__name { margin: 0; font-family: var(--font-kufi); font-size: 18px; line-height: 28px; font-weight: 600; color: var(--midad-muted); }
+select.field__input { cursor: pointer; }
 
 /* ———— النموذج ———— */
 .form { display: grid; gap: var(--space-4); }
@@ -87,7 +93,7 @@ a.zh-btn { text-decoration: none; }
 .preview__count { margin: 0; font-size: 15px; line-height: 24px; color: var(--midad-muted); }
 .preview--andalus .preview__count { padding-inline: var(--space-6); }
 .preview__abyat { margin: 0; padding: 0; list-style: none; display: grid; }
-.preview__abyat .zh-bayt { font-size: 19px; line-height: 35px; border-top: 0; }
+.preview__abyat .zh-bayt { font-size: var(--bayt-size, 19px); line-height: calc(var(--bayt-size, 19px) * 1.85); border-top: 0; }
 .problems { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
 .problems:empty { display: none; }
 .problems__item { font-size: 15px; line-height: 24px; color: var(--qirmiz-ink); background: var(--qirmiz-soft); padding: var(--space-2) var(--space-3); }
@@ -96,6 +102,7 @@ a.zh-btn { text-decoration: none; }
 /* ———— بدء المراجعة على الرئيسية ———— */
 .start { display: grid; gap: var(--space-2); justify-items: center; }
 .seg--center { justify-content: center; }
+.start__mode { width: 100%; }
 .start__note { margin: 0; font-size: 14px; line-height: 22px; color: var(--midad-muted); }
 
 /* ———— جلسة المراجعة ———— */
@@ -121,18 +128,24 @@ a.zh-btn { text-decoration: none; }
 .card--andalus .card__head { padding-inline: var(--space-6); }
 .card--andalus .card__poet { font-family: var(--font-maghribi); font-size: 24px; line-height: 40px; }
 .card--andalus .card__title { font-family: var(--font-maghribi); font-size: 28px; line-height: 52px; font-weight: 400; }
-.card .zh-bayt { font-size: 19px; line-height: 35px; width: 100%; }
+.card .zh-bayt, .size-sample { font-size: var(--bayt-size, 19px); line-height: calc(var(--bayt-size, 19px) * 1.85); width: 100%; }
 
-/* العجز المحجوب يحتفظ بمكانه، وخطّ متقطّع يدلّ عليه */
+/* الشطر المحجوب يحتفظ بمكانه، وخطّ متقطّع يدلّ عليه */
 .card__slot { position: relative; display: block; min-width: 0; }
 .card__slot::after {
-  content: ""; position: absolute; inset-inline: 20%; top: 50%;
+  content: ""; position: absolute; inset-inline: 20%; top: 50%; opacity: 0;
   border-top: var(--border-hair) dashed var(--khatt-strong); transition: opacity 150ms linear;
 }
-.card__slot.is-shown::after { opacity: 0; }
-.card__ajuz { clip-path: inset(0 0 0 100%); }
-/* كشف العجز كالتذهيب: الحروف تُرسم بخطّ ذهبي من اليمين، ثم يمتلئ المداد */
-.card__slot.is-shown .card__ajuz { clip-path: inset(0); -webkit-text-stroke-width: .6px; animation: tadhhib 320ms cubic-bezier(.2, .7, .2, 1) both; }
+.card__slot.is-hidden::after { opacity: 1; }
+.card__slot.is-hidden .card__shatr { clip-path: inset(0 0 0 100%); }
+/* الكشف كالتذهيب: الحروف تُرسم بخطّ ذهبي من اليمين، ثم يمتلئ المداد */
+.card__slot.is-revealing .card__shatr { -webkit-text-stroke-width: .6px; animation: tadhhib 320ms cubic-bezier(.2, .7, .2, 1) both; }
+/* الإخفاء التدريجي كلمةً كلمة: الكلمة تبقى بعرضها، ويظهر خطّ مكانها */
+.kalima { transition: color 150ms linear; }
+.kalima--khafiya { color: transparent; border-bottom: var(--border-hair) dashed var(--khatt-strong); }
+/* الحروف الأولى: الحرف بالمداد، وما بعده علامة باهتة لا حروف مقطوعة */
+.awail__baqi { color: var(--khatt-strong); }
+.card__context { margin: 0; font-size: 15px; line-height: 26px; color: var(--midad-muted); text-align: center; }
 @keyframes tadhhib {
   0%   { clip-path: inset(0 0 0 100%); color: transparent; -webkit-text-stroke-color: var(--dhahab); }
   55%  { clip-path: inset(0);         color: transparent; -webkit-text-stroke-color: var(--dhahab); }
@@ -160,6 +173,22 @@ a.zh-btn { text-decoration: none; }
 .khatima__summary { margin: 0; font-size: 17px; line-height: 28px; }
 .khatima__note { margin: 0; font-size: 15px; line-height: 26px; color: var(--midad-muted); }
 
+/* ———— الإعدادات ———— */
+.setting { display: grid; gap: var(--space-3); }
+.setting > * { min-width: 0; }
+.setting__title { margin: 0; font-family: var(--font-kufi); font-size: 18px; line-height: 28px; font-weight: 600; }
+.format-example {
+  margin: 0; padding: var(--space-3); white-space: pre-wrap;
+  font-family: var(--font-matn); font-size: 14px; line-height: 26px; color: var(--midad);
+  background: var(--raqq-raised); border: var(--border-hair) solid var(--khatt);
+}
+.text-preview { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.text-preview:empty { display: none; }
+.text-preview__item { display: grid; gap: var(--space-1); padding: var(--space-2) var(--space-3); border: var(--border-hair) solid var(--khatt); font-size: 15px; line-height: 24px; }
+.text-preview__item.is-problem { border-color: var(--qirmiz); background: var(--qirmiz-soft); }
+.text-preview__meta { color: var(--midad-muted); font-size: 14px; }
+.text-preview__issue { color: var(--qirmiz-ink); font-size: 14px; }
+
 /* ———— الافتتاح: شمسة تُرسم بالتِّبر ثم تمتلئ، في أقل من ثانية ———— */
 .splash {
   position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: var(--space-4);
@@ -170,13 +199,13 @@ a.zh-btn { text-decoration: none; }
 .splash__shamsa { width: 120px; height: 120px; }
 .splash__line { fill: none; stroke: currentColor; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 450ms cubic-bezier(.2, .7, .2, 1) forwards; }
 .splash__core { fill: currentColor; opacity: 0; animation: fill-in 250ms linear 400ms forwards; }
-.splash__name { margin: 0; font-family: var(--font-kufi); font-size: 44px; line-height: 60px; font-weight: 600; color: var(--on-deep); opacity: 0; animation: fill-in 300ms linear 300ms forwards; }
+.splash__name { margin: 0; font-family: var(--font-kufi); font-size: 72px; line-height: 88px; font-weight: 600; color: var(--on-deep); opacity: 0; animation: fill-in 300ms linear 300ms forwards; }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes fill-in { to { opacity: 1; } }
 @keyframes splash-out { to { opacity: 0; visibility: hidden; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .card__slot.is-shown .card__ajuz { animation: none; -webkit-text-stroke-width: 0; }
+  .card__slot.is-revealing .card__shatr { animation: none; -webkit-text-stroke-width: 0; }
   .card__slot::after { transition: none; }
   .splash__line { animation: none; stroke-dashoffset: 0; }
   .splash__core, .splash__name { animation: none; opacity: 1; }

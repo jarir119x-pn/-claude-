@@ -2,7 +2,7 @@
 
 // اختبارات تعمل في المتصفح بلا أدوات: افتح tests/index.html من استضافة.
 (async function () {
-  const { arabic, model, db, backup, parse, poems, srs } = window.hifz;
+  const { arabic, model, db, backup, parse, poems, srs, textImport } = window.hifz;
   const results = [];
   const check = (name, condition, detail = '') => results.push({ name, ok: Boolean(condition), detail });
   const throws = async (fn) => { try { await fn(); return null; } catch (e) { return e; } };
@@ -159,6 +159,82 @@
   check('حفظ التقييم', (await db.get('reviews', saved1.baytId)).lastReviewed === '2026-10-21');
   await poems.deletePoem(sp.poem.id);
   await poems.deletePoem(wish.poem.id);
+
+  // ———— البحث والتصنيف ————
+  const qPoem = { title: 'واحرّ قلباه', poet: 'المتنبي', qafiya: 'الميم', bahr: 'البسيط', era: 'العباسي', gharad: 'العتاب', source: { book: 'الديوان' } };
+  const qAbyat = [{ sadr: 'الْخَيْلُ وَاللَّيْلُ وَالْبَيْداءُ تَعْرِفُنِي', ajuz: 'وَالسَّيْفُ وَالرُّمْحُ وَالْقِرْطاسُ وَالْقَلَمُ' }];
+  check('البحث بالشاعر', poems.matchPoem(qPoem, qAbyat, 'المتنبي') && !poems.matchPoem(qPoem, qAbyat, 'المتنبي').bayt);
+  check('البحث بالقافية', Boolean(poems.matchPoem(qPoem, qAbyat, 'الميم')));
+  const inBayt = poems.matchPoem(qPoem, qAbyat, 'القرطاس');
+  check('البحث بكلمة من البيت يُرجع البيت', inBayt && inBayt.bayt === qAbyat[0]);
+  check('البحث يتجاهل التشكيل والهمزة', Boolean(poems.matchPoem(qPoem, qAbyat, 'البيداء')) && Boolean(poems.matchPoem({ ...qPoem, title: 'أنباء' }, [], 'انباء')));
+  check('لا تطابق', poems.matchPoem(qPoem, qAbyat, 'زهير') === null);
+  check('البحث الفارغ يطابق الكل', Boolean(poems.matchPoem(qPoem, qAbyat, '  ')));
+  const grouped = poems.groupResults([
+    { poem: { poet: 'المتنبي', bahr: 'الطويل', source: {} } },
+    { poem: { poet: 'أبو تمام', bahr: '', source: {} } },
+    { poem: { poet: 'المتنبي', bahr: 'البسيط', source: {} } },
+  ], 'poet');
+  check('التصنيف بالشاعر', grouped.length === 2 && grouped.find((g) => g.name === 'المتنبي').items.length === 2);
+  const byBahr = poems.groupResults([{ poem: { bahr: '', source: {} } }, { poem: { bahr: 'الطويل', source: {} } }], 'bahr');
+  check('«غير محدد» آخر المجموعات', byBahr[byBahr.length - 1].name === poems.UNSET);
+  check('بلا تصنيف: مجموعة واحدة', poems.groupResults([1, 2].map(() => ({ poem: {} })), '').length === 1);
+
+  // ———— أساليب الاختبار ————
+  check('الكلمات', arabic.words(' الْخَيْلُ  وَاللَّيْلُ ').length === 2);
+  const fl = arabic.firstLetter('الْخَيْلُ');
+  check('الحرف الأول', fl.awwal === 'ا' && fl.baqi === 'لْخَيْلُ');
+  check('الحرف الأول بحركاته', arabic.firstLetter('مِكَرٍّ').awwal === 'مِ' && arabic.firstLetter('وَالسَّيْفُ').awwal === 'وَ');
+  const rp = await poems.savePoem({ poet: 'عشوائي', ard: 'mashriq', status: 'memorized', sectionSize: 2 }, parse.parsePoemText('ع1 * ع1\nع2 * ع2\nع3 * ع3').abyat);
+  await srs.ensureSchedule('2026-10-17');
+  const before = await db.get('reviews', rp.abyat[0].id);
+  const randomItems = (await srs.randomSession(50)).filter((it) => it.poem.id === rp.poem.id);
+  check('العشوائية من المجدول وحده', randomItems.length === 2);
+  check('العشوائية لا تغيّر المواعيد', JSON.stringify(await db.get('reviews', rp.abyat[0].id)) === JSON.stringify(before));
+  check('عدد المجدول', (await srs.scheduledCount()) >= 2);
+  await poems.deletePoem(rp.poem.id);
+
+  // ———— الاستيراد من ملف نصي ————
+  const library = [
+    'ملاحظة قبل أول قصيدة تُتجاهل',
+    '# واحرّ قلباه',
+    'الشاعر: المتنبي',
+    'البحر: البسيط',
+    'الكتاب: الديوان',
+    'الصفحة: ٣٣١',
+    '',
+    'الْخَيْلُ وَاللَّيْلُ وَالْبَيْداءُ تَعْرِفُنِي * وَالسَّيْفُ وَالرُّمْحُ وَالْقِرْطاسُ وَالْقَلَمُ',
+    '',
+    '# النونية',
+    'الشاعر: ابن زيدون',
+    'الأرض: الأندلس',
+    'الحالة: أريد حفظها',
+    'المقطع: ٢',
+    'أَضْحَى التَّنائِي بَدِيلًا مِنْ تَدانِينا * وَنابَ عَنْ طِيبِ لُقْيانا تَجافِينا',
+    '#',
+    'البحر: الطويل',
+    'بيت بلا فاصل',
+    '# أرض خطأ',
+    'الشاعر: س',
+    'الأرض: مصر',
+    'ص * ع',
+  ].join('\r\n');
+  const lib = textImport.parseLibraryText(library);
+  check('الملف النصي: أربع قصائد', lib.length === 4, JSON.stringify(lib.map((x) => x.title)));
+  check('الحقول تُقرأ', lib[0].fields.poet === 'المتنبي' && lib[0].fields.bahr === 'البسيط' && lib[0].fields.source.book === 'الديوان' && lib[0].fields.source.page === '٣٣١');
+  check('الأبيات تُقسَّم والقصيدة سليمة', lib[0].abyat.length === 1 && !lib[0].issues.length);
+  check('الأرض والحالة والمقطع', lib[1].fields.ard === 'andalus' && lib[1].fields.status === 'wishlist' && lib[1].fields.sectionSize === 2);
+  check('بلا شاعر وسطر بلا فاصل: مشكلات برقم السطر الصحيح', lib[2].issues.length === 3 && lib[2].issues.some((x) => x.startsWith('السطر ١٨:')), JSON.stringify(lib[2].issues));
+  check('أرض غير معروفة مشكلة', lib[3].issues.length === 1);
+  const imported = await textImport.importPoems(lib);
+  check('يُحفظ السليم وحده', imported.poems === 2 && imported.abyat === 2);
+  const allPoems = await poems.listPoems();
+  const nuniya = allPoems.find((x) => x.poet === 'ابن زيدون' && x.title === 'النونية');
+  check('القصيدة المستوردة كاملة الحقول', nuniya && nuniya.ard === 'andalus' && nuniya.status === 'wishlist' && nuniya.sectionSize === 2);
+  for (const x of allPoems.filter((y) => y.poet === 'المتنبي' || (y.poet === 'ابن زيدون' && y.title === 'النونية'))) await poems.deletePoem(x.id);
+  check('ترميز UTF-8', textImport.decode(new TextEncoder().encode('الميم').buffer) === 'الميم');
+  check('ترميز Windows-1256 (ANSI)', textImport.decode(new Uint8Array([0xC7, 0xE1, 0xE3, 0xED, 0xE3]).buffer) === 'الميم');
+  check('ترميز UTF-16 (Unicode)', textImport.decode(new Uint8Array([0xFF, 0xFE, 0x27, 0x06, 0x44, 0x06]).buffer) === 'ال');
 
   // ———— العرض ————
   const list = document.getElementById('results');
