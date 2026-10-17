@@ -20,6 +20,7 @@
     fields.ard = radioValue('ard');
     fields.status = radioValue('status');
     fields.source = { book: $('f-book').value.trim(), page: $('f-page').value.trim() };
+    fields.sectionSize = Number(hifz.arabic.fromHindiDigits($('f-section').value.trim()));
     return fields;
   }
 
@@ -29,6 +30,7 @@
     setRadio('status', poem ? poem.status : 'memorized');
     $('f-book').value = poem ? poem.source.book : '';
     $('f-page').value = poem ? poem.source.page : '';
+    $('f-section').value = toHindiDigits((poem && poem.sectionSize) || 4);
   }
 
   function el(tag, className, text) {
@@ -120,6 +122,11 @@
     if (!fields.poet) {
       setStatus('اكتب اسم الشاعر.', true);
       $('f-poet').focus();
+      return;
+    }
+    if (!Number.isInteger(fields.sectionSize) || fields.sectionSize < 1) {
+      setStatus('طول المقطع عدد صحيح من ١ فأكثر.', true);
+      $('f-section').focus();
       return;
     }
     if (parsed.problems.length) {

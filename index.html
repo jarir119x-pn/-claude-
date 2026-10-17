@@ -33,11 +33,21 @@
       <span class="due__count" id="due-count">٠</span>
     </div>
     <p class="stats"><span id="stat-poems">القصائد: ٠</span><span id="stat-abyat">الأبيات: ٠</span></p>
+    <div class="start" id="start" hidden>
+      <div class="seg seg--center" id="duration" role="group" aria-label="مدة المراجعة">
+        <button type="button" class="seg__btn" data-minutes="0">الكل</button>
+        <button type="button" class="seg__btn" data-minutes="5">٥ دقائق</button>
+        <button type="button" class="seg__btn" data-minutes="10">١٠ دقائق</button>
+        <button type="button" class="seg__btn" data-minutes="15">١٥ دقيقة</button>
+      </div>
+      <p class="start__note" id="duration-note"></p>
+    </div>
     <p class="view__note" id="home-empty">لا قصائد بعد. ابدأ بإضافة قصيدة تحفظها، أو تريد حفظها.</p>
     <p class="status" id="home-status" aria-live="polite"></p>
     <div class="naqsh-fasil" aria-hidden="true"><span class="naqsh-fasil__najma"></span></div>
     <nav class="actions" aria-label="شاشات التطبيق">
-      <a class="zh-btn" href="#add">أضف قصيدة</a>
+      <a class="zh-btn" href="#review" id="start-btn" hidden>ابدأ المراجعة</a>
+      <a class="zh-btn" href="#add" id="add-btn">أضف قصيدة</a>
       <a class="zh-btn zh-btn--secondary" href="#poems">قصائدي</a>
       <a class="zh-btn zh-btn--secondary" href="#backup">النسخ الاحتياطي</a>
     </nav>
@@ -74,6 +84,9 @@
         <label class="choice__item" for="f-status-memorized"><input type="radio" id="f-status-memorized" name="status" value="memorized" checked> أحفظها</label>
         <label class="choice__item" for="f-status-wishlist"><input type="radio" id="f-status-wishlist" name="status" value="wishlist"> أريد حفظها</label>
       </fieldset>
+
+      <label class="field field--short" for="f-section"><span class="field__label">طول المقطع <span class="field__hint">(أبيات تُحفظ معًا قبل فتح ما بعدها)</span></span>
+        <input class="field__input" id="f-section" name="sectionSize" inputmode="numeric" autocomplete="off" value="٤"></label>
 
       <div class="form__row">
         <label class="field" for="f-era"><span class="field__label">العصر</span>
@@ -119,6 +132,47 @@
     </form>
   </section>
 
+  <section class="view" id="view-review" aria-label="المراجعة" hidden>
+    <div class="review-bar">
+      <a class="tool" href="#home">إنهاء</a>
+      <button type="button" class="tool" id="tashkeel-toggle" aria-pressed="true">التشكيل ظاهر</button>
+    </div>
+    <article class="zh-lawh zh-lawh--abbasi card" id="card">
+      <span class="zh-lawh__corner zh-lawh__corner--start" aria-hidden="true"></span>
+      <span class="zh-lawh__corner zh-lawh__corner--end" aria-hidden="true"></span>
+      <div class="card__head">
+        <div class="card__meta"><span class="card__poet" id="card-poet"></span><span class="card__bahr" id="card-bahr"></span></div>
+        <span class="zh-badge" id="card-count"></span>
+      </div>
+      <h2 class="card__title" id="card-title"></h2>
+      <div class="zh-bayt">
+        <span class="zh-bayt__shatr" id="card-sadr"></span>
+        <span class="zh-bayt__sep" aria-hidden="true"></span>
+        <span class="card__slot" id="card-slot"><span class="zh-bayt__shatr card__ajuz" id="card-ajuz"></span></span>
+      </div>
+      <button type="button" class="zh-btn card__reveal" id="reveal">اكشف العجز</button>
+      <div class="rate" id="rate" role="group" aria-label="قيّم حفظك للبيت" hidden>
+        <button type="button" class="rate__btn rate__btn--nasitu" data-rating="nasitu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M6 6L18 18M18 6L6 18"></path></svg>نسيته</button>
+        <button type="button" class="rate__btn rate__btn--taraddadtu" data-rating="taraddadtu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 6V18M15 6V18"></path></svg>تردّدت</button>
+        <button type="button" class="rate__btn rate__btn--ataqtu" data-rating="ataqtu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M4 12L9.5 17.5L20 7"></path></svg>أتقنته</button>
+      </div>
+      <div class="naqsh-hashiya" id="card-foot" aria-hidden="true"></div>
+    </article>
+    <p class="status" id="review-status" aria-live="polite"></p>
+  </section>
+
+  <section class="view" id="view-done" aria-labelledby="done-title" hidden>
+    <div class="khatima">
+      <span class="zh-shamsa" aria-hidden="true"><span class="zh-shamsa__num" id="done-count"></span></span>
+      <h1 class="view__title" id="done-title">أتممت المراجعة</h1>
+      <p class="khatima__summary" id="done-summary"></p>
+      <p class="khatima__note" id="done-unlocked" hidden></p>
+    </div>
+    <div class="actions">
+      <a class="zh-btn" href="#home">الرئيسية</a>
+    </div>
+  </section>
+
   <section class="view" id="view-backup" aria-labelledby="backup-title" hidden>
     <h1 class="view__title" id="backup-title">النسخ الاحتياطي</h1>
     <p class="view__note">احفظ محفوظاتك كلها في ملف واحد، واحتفظ به خارج الهاتف. ومنه تستعيدها، أو تنقلها إلى نسخة التطبيق القادمة. الاستيراد يضيف ما في الملف ويحدّث الموجود، ولا يحذف شيئًا.</p>
@@ -142,8 +196,10 @@
 <script src="src/backup.js"></script>
 <script src="src/parse.js"></script>
 <script src="src/poems.js"></script>
+<script src="src/srs.js"></script>
 <script src="src/entry.js"></script>
 <script src="src/library.js"></script>
+<script src="src/review.js"></script>
 <script src="src/app.js"></script>
 </body>
 </html>

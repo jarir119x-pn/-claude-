@@ -11,6 +11,11 @@
     return String(value).replace(/\d/g, (d) => HINDI_DIGITS[d]);
   }
 
+  // ما يكتبه المستخدم بالأرقام الهندية يُقرأ رقمًا
+  function fromHindiDigits(value) {
+    return String(value).replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660));
+  }
+
   // للعرض فقط: البيانات تبقى بتشكيلها
   function stripTashkeel(text) {
     return String(text).replace(HARAKAT, '');
@@ -29,5 +34,5 @@
       .trim();
   }
 
-  hifz.arabic = { toHindiDigits, stripTashkeel, normalizeForSearch };
+  hifz.arabic = { toHindiDigits, fromHindiDigits, stripTashkeel, normalizeForSearch };
 })(window.hifz = window.hifz || {});
