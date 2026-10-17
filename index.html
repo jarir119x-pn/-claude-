@@ -4,7 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#132953">
-<title>حفظ الشعر</title>
+<title>حافظ</title>
+<script>
+  // المظهر وحجم الخط قبل أول رسم، فلا تومض الصفحة بالمظهر الآخر
+  try {
+    var t = localStorage.getItem('hifz.theme');
+    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    var z = Number(localStorage.getItem('hifz.baytSize'));
+    if (z) document.documentElement.style.setProperty('--bayt-size', z + 'px');
+  } catch (e) { /* التخزين غير متاح */ }
+</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/shamsa-192.png">
 <link rel="apple-touch-icon" href="icons/shamsa-192.png">
@@ -21,7 +30,7 @@
     <polygon class="splash__line" points="60.00,14.00 65.85,30.58 77.60,17.50 76.67,35.06 92.53,27.47 84.94,43.33 102.50,42.40 89.42,54.15 106.00,60.00 89.42,65.85 102.50,77.60 84.94,76.67 92.53,92.53 76.67,84.94 77.60,102.50 65.85,89.42 60.00,106.00 54.15,89.42 42.40,102.50 43.33,84.94 27.47,92.53 35.06,76.67 17.50,77.60 30.58,65.85 14.00,60.00 30.58,54.15 17.50,42.40 35.06,43.33 27.47,27.47 43.33,35.06 42.40,17.50 54.15,30.58" stroke-width="2" pathLength="1"></polygon>
     <polygon class="splash__core" points="60.00,35.96 67.04,43.00 77.00,43.00 77.00,52.96 84.04,60.00 77.00,67.04 77.00,77.00 67.04,77.00 60.00,84.04 52.96,77.00 43.00,77.00 43.00,67.04 35.96,60.00 43.00,52.96 43.00,43.00 52.96,43.00"></polygon>
   </svg>
-  <p class="splash__name">حفظ الشعر</p>
+  <p class="splash__name">حافظ</p>
 </div>
 
 <main class="app">
@@ -58,7 +67,7 @@
       <a class="zh-btn zh-btn--secondary" href="#review/random" id="random-btn" hidden>مراجعة عشوائية</a>
       <a class="zh-btn" href="#add" id="add-btn">أضف قصيدة</a>
       <a class="zh-btn zh-btn--secondary" href="#poems">قصائدي</a>
-      <a class="zh-btn zh-btn--secondary" href="#backup">النسخ الاحتياطي</a>
+      <a class="zh-btn zh-btn--secondary" href="#settings">الإعدادات</a>
     </nav>
   </section>
 
@@ -198,17 +207,79 @@
     </div>
   </section>
 
-  <section class="view" id="view-backup" aria-labelledby="backup-title" hidden>
-    <h1 class="view__title" id="backup-title">النسخ الاحتياطي</h1>
-    <p class="view__note">احفظ محفوظاتك كلها في ملف واحد، واحتفظ به خارج الهاتف. ومنه تستعيدها، أو تنقلها إلى نسخة التطبيق القادمة. الاستيراد يضيف ما في الملف ويحدّث الموجود، ولا يحذف شيئًا.</p>
-    <div class="actions">
-      <button type="button" class="zh-btn" id="export-btn">صدّر المحفوظات</button>
-      <label class="zh-btn zh-btn--secondary file-btn" for="import-input">
-        استورد من ملف
-        <input type="file" id="import-input" accept="application/json,.json">
-      </label>
+  <section class="view" id="view-settings" aria-labelledby="settings-title" hidden>
+    <h1 class="view__title" id="settings-title">الإعدادات</h1>
+
+    <div class="setting">
+      <h2 class="setting__title">المظهر</h2>
+      <div class="seg" id="theme-picker" role="group" aria-label="المظهر">
+        <button type="button" class="seg__btn" data-theme-choice="auto">تلقائي</button>
+        <button type="button" class="seg__btn" data-theme-choice="light">نهار</button>
+        <button type="button" class="seg__btn" data-theme-choice="dark">ليل</button>
+      </div>
+      <p class="view__note">«تلقائي» يتبع إعداد الهاتف.</p>
     </div>
-    <p class="status" id="backup-status" aria-live="polite"></p>
+
+    <div class="setting">
+      <h2 class="setting__title">حجم خط الأبيات</h2>
+      <div class="seg" id="size-picker" role="group" aria-label="حجم خط الأبيات">
+        <button type="button" class="seg__btn" data-size="17">١٧</button>
+        <button type="button" class="seg__btn" data-size="19">١٩</button>
+        <button type="button" class="seg__btn" data-size="21">٢١</button>
+        <button type="button" class="seg__btn" data-size="23">٢٣</button>
+      </div>
+      <div class="zh-bayt size-sample" aria-label="معاينة الحجم">
+        <span class="zh-bayt__shatr">مِكَرٍّ مِفَرٍّ مُقْبِلٍ مُدْبِرٍ مَعًا</span>
+        <span class="zh-bayt__sep" aria-hidden="true"></span>
+        <span class="zh-bayt__shatr">كَجُلْمُودِ صَخْرٍ حَطَّهُ السَّيْلُ مِنْ عَلِ</span>
+      </div>
+      <p class="view__note">١٩ يتسع فيه أطول الأشطر لسطر واحد في الهاتف. وما فوقه قد يقسم الشطر الطويل على سطرين.</p>
+    </div>
+
+    <div class="naqsh-fasil" aria-hidden="true"><span class="naqsh-fasil__najma"></span></div>
+
+    <div class="setting">
+      <h2 class="setting__title">النسخ الاحتياطي</h2>
+      <p class="view__note">احفظ محفوظاتك كلها في ملف واحد، واحتفظ به خارج الهاتف. ومنه تستعيدها، أو تنقلها إلى نسخة التطبيق القادمة. الاستيراد يضيف ما في الملف ويحدّث الموجود، ولا يحذف شيئًا.</p>
+      <div class="actions">
+        <button type="button" class="zh-btn" id="export-btn">صدّر المحفوظات</button>
+        <label class="zh-btn zh-btn--secondary file-btn" for="import-input">
+          استورد نسخة احتياطية
+          <input type="file" id="import-input" accept="application/json,.json">
+        </label>
+      </div>
+      <p class="status" id="backup-status" aria-live="polite"></p>
+    </div>
+
+    <div class="setting">
+      <h2 class="setting__title">استيراد قصائد من ملف نصي</h2>
+      <p class="view__note">جهّز على الحاسوب ملفًا نصيًّا فيه قصائد كثيرة، كل قصيدة تبدأ بسطر أوله #، ثم حقولها، ثم أبياتها:</p>
+      <pre class="format-example"># واحرّ قلباه
+الشاعر: المتنبي
+البحر: البسيط
+القافية: الميم
+الأرض: المشرق
+الحالة: أحفظها
+الْخَيْلُ وَاللَّيْلُ وَالْبَيْداءُ تَعْرِفُنِي * وَالسَّيْفُ وَالرُّمْحُ وَالْقِرْطاسُ وَالْقَلَمُ
+
+# النونية
+الشاعر: ابن زيدون
+الأرض: الأندلس
+أَضْحَى التَّنائِي بَدِيلًا مِنْ تَدانِينا * وَنابَ عَنْ طِيبِ لُقْيانا تَجافِينا</pre>
+      <p class="view__note">الشاعر وحده لازم. وتصلح أيضًا: العصر، والغرض، والكتاب، والصفحة، والمقطع (طوله). وتُعرض القصائد هنا قبل حفظها.</p>
+      <div class="actions">
+        <label class="zh-btn zh-btn--secondary file-btn" for="text-input">
+          اختر ملفًا نصيًّا
+          <input type="file" id="text-input" accept="text/plain,.txt">
+        </label>
+      </div>
+      <ul class="text-preview" id="text-preview"></ul>
+      <div class="actions">
+        <button type="button" class="zh-btn zh-btn--secondary" id="text-import-btn" hidden></button>
+      </div>
+      <p class="status" id="text-status" aria-live="polite"></p>
+    </div>
+
     <div class="actions">
       <a class="zh-btn zh-btn--secondary" href="#home">الرئيسية</a>
     </div>
@@ -222,9 +293,11 @@
 <script src="src/parse.js"></script>
 <script src="src/poems.js"></script>
 <script src="src/srs.js"></script>
+<script src="src/textimport.js"></script>
 <script src="src/entry.js"></script>
 <script src="src/library.js"></script>
 <script src="src/review.js"></script>
+<script src="src/settings.js"></script>
 <script src="src/app.js"></script>
 </body>
 </html>

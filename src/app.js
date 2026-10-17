@@ -35,13 +35,14 @@
   }
 
   // ———— التنقل: كل شاشة قسم في index.html، والعنوان بعد # يختارها ————
-  // #home و#poems و#backup، و#add لقصيدة جديدة، و#edit/<المعرّف> لتعديل قصيدة،
+  // #home و#poems و#settings (و#backup اسم قديم لها)، و#add لقصيدة جديدة، و#edit/<المعرّف> لتعديل قصيدة،
   // و#review/<الدقائق> لجلسة مراجعة، و#done لخاتمتها
-  const VIEWS = ['home', 'poems', 'edit', 'review', 'done', 'backup'];
+  const VIEWS = ['home', 'poems', 'edit', 'review', 'done', 'settings'];
 
   function showView() {
     const [name, param] = location.hash.slice(1).split('/');
-    const current = name === 'add' ? 'edit' : (VIEWS.includes(name) ? name : 'home');
+    const alias = { add: 'edit', backup: 'settings' };
+    const current = alias[name] || (VIEWS.includes(name) ? name : 'home');
     for (const view of VIEWS) $(`view-${view}`).hidden = view !== current;
     window.scrollTo(0, 0);
     if (current === 'home') renderHome();
@@ -49,6 +50,7 @@
     if (current === 'edit') hifz.entry.open(name === 'edit' && param ? decodeURIComponent(param) : null);
     if (current === 'review') hifz.review.start(param === 'random' ? 'random' : Number(param) || 0);
     if (current === 'done') hifz.review.renderDone();
+    if (current === 'settings') hifz.settings.render();
   }
 
   // ———— الرئيسية: ما حان موعده، واختيار مدة الجلسة ————

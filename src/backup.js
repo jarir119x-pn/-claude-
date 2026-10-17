@@ -19,7 +19,7 @@
 
   function fileName(date = new Date()) {
     const pad = (n) => String(n).padStart(2, '0');
-    return `hifz-alshir-${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}.json`;
+    return `hafiz-${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}.json`;
   }
 
   async function downloadExport() {
@@ -38,7 +38,7 @@
 
   // يتحقق من الملف قبل أن يُكتب منه شيء، ويرمي خطأً مفهومًا للمستخدم
   function validate(data) {
-    if (!data || data.format !== FORMAT) throw new Error('هذا ليس ملف نسخة احتياطية من حفظ الشعر.');
+    if (!data || data.format !== FORMAT) throw new Error('هذا ليس ملف نسخة احتياطية من حافظ.');
     if (typeof data.version !== 'number' || data.version > FORMAT_VERSION) {
       throw new Error('الملف من إصدار أحدث من التطبيق. حدّث التطبيق ثم أعد الاستيراد.');
     }
