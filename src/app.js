@@ -7,12 +7,8 @@
   const SPLASH_KEY = 'hifz.splashDay';
   const SPLASH_MS = 950;
 
-  // اليوم المحلي بصيغة YYYY-MM-DD، وهي صيغة موعد المراجعة القادمة
-  function today() {
-    const d = new Date();
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  }
+  const MINUTES_KEY = 'hifz.minutes';
+  const today = () => hifz.srs.today();
 
   // ———— الافتتاح: أول فتح في اليوم وحده، ويُتخطّى بأي لمسة ————
   function initSplash() {
@@ -39,8 +35,9 @@
   }
 
   // ———— التنقل: كل شاشة قسم في index.html، والعنوان بعد # يختارها ————
-  // #home و#poems و#backup، و#add لقصيدة جديدة، و#edit/<المعرّف> لتعديل قصيدة
-  const VIEWS = ['home', 'poems', 'edit', 'backup'];
+  // #home و#poems و#backup، و#add لقصيدة جديدة، و#edit/<المعرّف> لتعديل قصيدة،
+  // و#review/<الدقائق> لجلسة مراجعة، و#done لخاتمتها
+  const VIEWS = ['home', 'poems', 'edit', 'review', 'done', 'backup'];
 
   function showView() {
     const [name, param] = location.hash.slice(1).split('/');
@@ -50,24 +47,64 @@
     if (current === 'home') renderHome();
     if (current === 'poems') hifz.library.render();
     if (current === 'edit') hifz.entry.open(name === 'edit' && param ? decodeURIComponent(param) : null);
+    if (current === 'review') hifz.review.start(Number(param) || 0);
+    if (current === 'done') hifz.review.renderDone();
   }
 
-  // ———— الرئيسية ————
+  // ———— الرئيسية: ما حان موعده، واختيار مدة الجلسة ————
+  let minutes = 0;
+  let dueCount = 0;
+  try { minutes = Number(localStorage.getItem(MINUTES_KEY)) || 0; } catch (e) { /* التخزين غير متاح */ }
+
+  function renderDuration() {
+    for (const btn of document.querySelectorAll('#duration [data-minutes]')) {
+      btn.setAttribute('aria-pressed', String(Number(btn.dataset.minutes) === minutes));
+    }
+    const limit = minutes > 0 ? Math.round((minutes * 60) / hifz.srs.SECONDS_PER_BAYT) : dueCount;
+    const inSession = Math.min(limit, dueCount);
+    $('duration-note').textContent = inSession < dueCount
+      ? `في الجلسة: ${toHindiDigits(inSession)} من ${toHindiDigits(dueCount)}، الأهمّ أولًا`
+      : `في الجلسة: ${toHindiDigits(dueCount)}`;
+    $('start-btn').href = `#review/${minutes}`;
+  }
+
+  // التنبيه: العدد على الرئيسية، وشارة على أيقونة التطبيق حيث يدعمها الهاتف
+  function setBadge(count) {
+    if (!('setAppBadge' in navigator)) return;
+    (count ? navigator.setAppBadge(count) : navigator.clearAppBadge()).catch(() => { /* غير مدعوم */ });
+  }
+
   async function renderHome() {
     try {
-      const [due, poems, abyat] = await Promise.all([
-        hifz.db.dueReviews(today()),
+      await hifz.srs.ensureSchedule(today());
+      const [session, poems, abyat] = await Promise.all([
+        hifz.srs.buildSession(today()),
         hifz.db.count('poems'),
         hifz.db.count('abyat'),
       ]);
-      $('due-count').textContent = toHindiDigits(due.length);
+      dueCount = session.length;
+      $('due-count').textContent = toHindiDigits(dueCount);
       $('stat-poems').textContent = `القصائد: ${toHindiDigits(poems)}`;
       $('stat-abyat').textContent = `الأبيات: ${toHindiDigits(abyat)}`;
       $('home-empty').hidden = poems > 0;
+      // زرّ رئيس واحد في الشاشة: المراجعة إن حان شيء، وإلا الإضافة
+      $('start').hidden = !dueCount;
+      $('start-btn').hidden = !dueCount;
+      $('add-btn').classList.toggle('zh-btn--secondary', dueCount > 0);
+      renderDuration();
+      setBadge(dueCount);
     } catch (e) {
       showStatus('home-status', 'تعذّر فتح المحفوظات على هذا الجهاز. تأكد أن المتصفح لا يمنع حفظ البيانات.', true);
     }
   }
+
+  $('duration').addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-minutes]');
+    if (!btn) return;
+    minutes = Number(btn.dataset.minutes);
+    try { localStorage.setItem(MINUTES_KEY, String(minutes)); } catch (e) { /* التخزين غير متاح */ }
+    renderDuration();
+  });
 
   // ———— النسخ الاحتياطي ————
   function showStatus(id, text, isError = false) {
@@ -105,7 +142,6 @@
     navigator.serviceWorker.register('sw.js').catch(() => { /* يعمل التطبيق دونه، لكن لا يُخزَّن للعمل دون إنترنت */ });
   }
 
-  hifz.today = today;
 
   initSplash();
   initBackup();

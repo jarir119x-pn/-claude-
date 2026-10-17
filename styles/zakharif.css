@@ -19,3 +19,28 @@
   -webkit-mask: url("../design/ornaments/shamsa.svg") center / contain no-repeat;
   mask: url("../design/ornaments/shamsa.svg") center / contain no-repeat;
 }
+
+/* ———— حاشية بطاقة البيت: في قاعدتها، تحت أزرار التقييم لا تحت الأبيات ———— */
+/* نقش الظلّ العباسي: zill نهارًا، ويختفي zill على الليل فيصير khatt-strong */
+:root { --naqsh-zill: var(--zill); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --naqsh-zill: var(--khatt-strong); } }
+:root[data-theme="dark"] { --naqsh-zill: var(--khatt-strong); }
+
+/* المشرق: صفّ النقط المحفورة بالظلّ */
+.naqsh-hashiya { height: 16px; background: var(--naqsh-zill);
+  -webkit-mask: url("../design/ornaments/drill-holes.svg") center 0 / 48px 48px repeat-x;
+  mask: url("../design/ornaments/drill-holes.svg") center 0 / 48px 48px repeat-x; }
+
+/* الأندلس نهارًا: الإزار المسنّن، خزف ثابت الألوان */
+.naqsh-hashiya--andalus { height: 21px; -webkit-mask: none; mask: none;
+  background: url("../design/ornaments/izar-crest.svg") center 0 / 18px 21px repeat-x; }
+
+/* الأندلس ليلًا: يبدو الإزار شريطًا فاتحًا فاقعًا، فتحلّ محلّه الضفيرة بالذهب */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .naqsh-hashiya--andalus { height: 20px; background: var(--dhahab);
+    -webkit-mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x;
+    mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; }
+}
+:root[data-theme="dark"] .naqsh-hashiya--andalus { height: 20px; background: var(--dhahab);
+  -webkit-mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x;
+  mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; }

@@ -26,12 +26,14 @@
       source: { book: '', page: '' },
       occasion: '',
       status: 'memorized',
+      sectionSize: 4,
       notes: '',
       addedAt: nowIso(),
       ...fields,
     };
     if (!ARD.includes(poem.ard)) throw new Error(`الأرض غير معروفة: ${poem.ard}`);
     if (!STATUS.includes(poem.status)) throw new Error(`الحالة غير معروفة: ${poem.status}`);
+    if (!Number.isInteger(poem.sectionSize) || poem.sectionSize < 1) throw new Error('طول المقطع عدد صحيح من ١ فأكثر.');
     return poem;
   }
 

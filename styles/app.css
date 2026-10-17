@@ -67,6 +67,7 @@ a.zh-btn { text-decoration: none; }
 .form > * { min-width: 0; }
 .form__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 .form__row--source { grid-template-columns: 1fr 96px; }
+.field--short { max-width: 50%; }
 .field { display: grid; gap: var(--space-1); min-width: 0; }
 .field__label { font-size: 15px; line-height: 24px; font-weight: 600; }
 .field__hint { font-size: 13px; line-height: 20px; font-weight: 400; color: var(--midad-muted); }
@@ -92,6 +93,73 @@ a.zh-btn { text-decoration: none; }
 .problems__item { font-size: 15px; line-height: 24px; color: var(--qirmiz-ink); background: var(--qirmiz-soft); padding: var(--space-2) var(--space-3); }
 .problems__text { display: block; color: var(--midad); }
 
+/* ———— بدء المراجعة على الرئيسية ———— */
+.start { display: grid; gap: var(--space-2); justify-items: center; }
+.seg--center { justify-content: center; }
+.start__note { margin: 0; font-size: 14px; line-height: 22px; color: var(--midad-muted); }
+
+/* ———— جلسة المراجعة ———— */
+.review-bar { display: flex; justify-content: space-between; gap: var(--space-2); }
+.tool {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--space-3);
+  font-family: var(--font-ui); font-size: 14px; font-weight: 600; text-decoration: none;
+  background: transparent; color: var(--midad);
+  border: var(--border-hair) solid var(--khatt-strong); border-radius: var(--radius-0); cursor: pointer;
+}
+.tool[aria-pressed="false"] { color: var(--midad-muted); border-style: dashed; }
+
+/* بطاقة البيت: لوح بالظلّ للمشرق، ومذهّب بشمستيه للأندلس. حجم البيت ١٩ بكسل ليتسع الشطر لسطر */
+.card { max-width: none; width: 100%; display: grid; gap: var(--space-4); padding: var(--space-6) 14px var(--space-4); }
+.card > * { min-width: 0; }
+.card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.card__meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); min-width: 0; }
+.card__poet { font-family: var(--font-kufi); font-size: 16px; line-height: 24px; color: var(--midad-muted); }
+.card__bahr { font-size: 14px; line-height: 22px; color: var(--midad-muted); }
+.card__bahr::before { content: "· "; }
+.card__title { font-family: var(--font-kufi); font-size: 24px; line-height: 36px; font-weight: 600; margin: 0; text-wrap: balance; }
+.card--andalus { padding-top: var(--space-8); }
+.card--andalus .card__head { padding-inline: var(--space-6); }
+.card--andalus .card__poet { font-family: var(--font-maghribi); font-size: 24px; line-height: 40px; }
+.card--andalus .card__title { font-family: var(--font-maghribi); font-size: 28px; line-height: 52px; font-weight: 400; }
+.card .zh-bayt { font-size: 19px; line-height: 35px; width: 100%; }
+
+/* العجز المحجوب يحتفظ بمكانه، وخطّ متقطّع يدلّ عليه */
+.card__slot { position: relative; display: block; min-width: 0; }
+.card__slot::after {
+  content: ""; position: absolute; inset-inline: 20%; top: 50%;
+  border-top: var(--border-hair) dashed var(--khatt-strong); transition: opacity 150ms linear;
+}
+.card__slot.is-shown::after { opacity: 0; }
+.card__ajuz { clip-path: inset(0 0 0 100%); }
+/* كشف العجز كالتذهيب: الحروف تُرسم بخطّ ذهبي من اليمين، ثم يمتلئ المداد */
+.card__slot.is-shown .card__ajuz { clip-path: inset(0); -webkit-text-stroke-width: .6px; animation: tadhhib 320ms cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes tadhhib {
+  0%   { clip-path: inset(0 0 0 100%); color: transparent; -webkit-text-stroke-color: var(--dhahab); }
+  55%  { clip-path: inset(0);         color: transparent; -webkit-text-stroke-color: var(--dhahab); }
+  100% { clip-path: inset(0);         color: var(--midad); -webkit-text-stroke-color: transparent; }
+}
+.card__reveal { width: 100%; min-height: 48px; justify-content: center; }
+
+/* أزرار التقييم: تختلف في الإضاءة والأيقونة والكلمة، والأوسط محايد يفصل القرمز عن الزمرّد */
+.rate { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.rate__btn {
+  position: relative; min-height: 48px; padding: 0 var(--space-2);
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1);
+  font-family: var(--font-ui); font-size: 16px; font-weight: 600;
+  border: var(--border-hair) solid; border-radius: var(--radius-0); cursor: pointer;
+}
+.rate__btn::after { content: ""; position: absolute; inset: 4px; border: var(--border-hair) solid currentColor; opacity: .35; pointer-events: none; }
+.rate__btn svg { width: 20px; height: 20px; flex: none; }
+.rate__btn--nasitu { background: var(--qirmiz); border-color: var(--qirmiz); color: var(--on-fill); }
+.rate__btn--taraddadtu { background: transparent; border-color: var(--khatt-strong); color: var(--midad); }
+.rate__btn--ataqtu { background: var(--zumurrud-soft); border-color: var(--zumurrud); color: var(--zumurrud-ink); }
+.rate__btn:focus-visible, .tool:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--raqq); }
+
+/* ———— خاتمة الجلسة: وسام الشمسة بعدد الأبيات ———— */
+.khatima { display: grid; justify-items: center; gap: var(--space-3); text-align: center; padding-top: var(--space-8); }
+.khatima__summary { margin: 0; font-size: 17px; line-height: 28px; }
+.khatima__note { margin: 0; font-size: 15px; line-height: 26px; color: var(--midad-muted); }
+
 /* ———— الافتتاح: شمسة تُرسم بالتِّبر ثم تمتلئ، في أقل من ثانية ———— */
 .splash {
   position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: var(--space-4);
@@ -108,6 +176,8 @@ a.zh-btn { text-decoration: none; }
 @keyframes splash-out { to { opacity: 0; visibility: hidden; } }
 
 @media (prefers-reduced-motion: reduce) {
+  .card__slot.is-shown .card__ajuz { animation: none; -webkit-text-stroke-width: 0; }
+  .card__slot::after { transition: none; }
   .splash__line { animation: none; stroke-dashoffset: 0; }
   .splash__core, .splash__name { animation: none; opacity: 1; }
 }

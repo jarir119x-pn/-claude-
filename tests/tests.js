@@ -2,7 +2,7 @@
 
 // اختبارات تعمل في المتصفح بلا أدوات: افتح tests/index.html من استضافة.
 (async function () {
-  const { arabic, model, db, backup, parse, poems } = window.hifz;
+  const { arabic, model, db, backup, parse, poems, srs } = window.hifz;
   const results = [];
   const check = (name, condition, detail = '') => results.push({ name, ok: Boolean(condition), detail });
   const throws = async (fn) => { try { await fn(); return null; } catch (e) { return e; } };
@@ -101,6 +101,64 @@
   check('القائمة تحمل عدد الأبيات', listed.find((p) => p.id === saved.poem.id).abyatCount === 2);
   await poems.deletePoem(saved.poem.id);
   check('حذف القصيدة يحذف أبياتها', !(await db.get('poems', saved.poem.id)) && !(await db.abyatOfPoem(saved.poem.id)).length);
+
+  // ———— الخوارزمية ————
+  check('الأرقام الهندية تُقرأ رقمًا', Number(arabic.fromHindiDigits('١٢')) === 12);
+  check('إضافة الأيام عبر الشهر', srs.addDays('2026-10-31', 1) === '2026-11-01' && srs.addDays('2026-12-30', 3) === '2027-01-02');
+  const fresh = model.createReview({ baytId: 'x' });
+  const r1 = srs.rate(fresh, 'ataqtu', '2026-10-17');
+  check('أتقنته أول مرة: يوم', r1.intervalDays === 1 && r1.nextDue === '2026-10-18' && r1.ease === 2.6 && r1.lastReviewed === '2026-10-17');
+  const r2 = srs.rate(r1, 'ataqtu', '2026-10-18');
+  check('أتقنته ثانيًا: ٣ أيام', r2.intervalDays === 3 && r2.ease === 2.7);
+  const r3 = srs.rate(r2, 'ataqtu', '2026-10-21');
+  check('أتقنته بعدها: الفاصل × السهولة', r3.intervalDays === 8 && r3.nextDue === '2026-10-29');
+  const r4 = srs.rate(r3, 'taraddadtu', '2026-10-29');
+  check('تردّدت: الفاصل × ١٫٢ والسهولة تنقص ٠٫١٥', r4.intervalDays === 10 && r4.ease === 2.65);
+  const r5 = srs.rate(r4, 'nasitu', '2026-11-08');
+  check('نسيته: يوم، والسهولة تنقص ٠٫٢، والنسيان يزيد', r5.intervalDays === 1 && r5.ease === 2.45 && r5.lapses === 1);
+  check('تردّدت في بيت جديد: يوم', srs.rate(fresh, 'taraddadtu', '2026-10-17').intervalDays === 1);
+  let low = fresh;
+  for (let i = 0; i < 10; i += 1) low = srs.rate(low, 'nasitu', '2026-10-17');
+  check('السهولة لا تنزل عن ١٫٣', low.ease === 1.3 && low.lapses === 10);
+  let high = fresh;
+  for (let i = 0; i < 10; i += 1) high = srs.rate(high, 'ataqtu', '2026-10-17');
+  check('السهولة لا تتجاوز ٣', high.ease === 3);
+  check('التقييم لا يغيّر السجل الأصلي', fresh.intervalDays === 0 && fresh.ease === 2.5);
+  check('تقييم غير معروف يُرفض', await throws(() => srs.rate(fresh, 'maybe')));
+  check('الرسوخ عند ٣ أيام', !srs.isRasikh(r1) && srs.isRasikh(r2) && !srs.isRasikh(undefined));
+
+  // ———— المقاطع والجلسة ————
+  check('تقسيم المقاطع', srs.sectionsOf([1, 2, 3, 4, 5, 6].map((order) => ({ order })), 4).map((x) => x.length).join() === '4,2');
+  const six = parse.parsePoemText('ص1 * ع1\nص2 * ع2\nص3 * ع3\nص4 * ع4\nص5 * ع5\nص6 * ع6').abyat;
+  const sp = await poems.savePoem({ poet: 'زهير', ard: 'mashriq', status: 'memorized', sectionSize: 4 }, six);
+  const wish = await poems.savePoem({ poet: 'ابن زيدون', ard: 'andalus', status: 'wishlist' }, six.slice(0, 2));
+  const mine = (items) => items.filter((it) => it.poem.id === sp.poem.id);
+  const s1 = await srs.ensureSchedule('2026-10-17');
+  check('المقطع الأول يُجدول لليوم وحده', s1.created === 4 && !s1.unlocked.length, JSON.stringify(s1));
+  check('قصائد «أريد حفظه» لا تُجدول', !(await db.get('reviews', wish.abyat[0].id)));
+  check('الجدولة لا تتكرر', (await srs.ensureSchedule('2026-10-17')).created === 0);
+  check('المقطع الثاني مغلق قبل الرسوخ', !(await db.get('reviews', sp.abyat[4].id)));
+  const firstFour = sp.abyat.slice(0, 4).map((b) => b.id);
+  for (const [i, id] of firstFour.entries()) {
+    const rev = await db.get('reviews', id);
+    await db.put('reviews', { ...rev, intervalDays: i === 3 ? 1 : 3, nextDue: '2026-10-2' + i });
+  }
+  check('لا يُفتح المقطع وبيت واحد لم يرسخ', (await srs.ensureSchedule('2026-10-17')).created === 0);
+  const last = await db.get('reviews', firstFour[3]);
+  await db.put('reviews', { ...last, intervalDays: 3 });
+  const s2 = await srs.ensureSchedule('2026-10-17');
+  check('رسوخ المقطع يفتح الذي بعده', s2.created === 2 && s2.unlocked.length === 1 && s2.unlocked[0].section === 2);
+
+  const session = mine(await srs.buildSession('2026-10-21'));
+  check('الجلسة: المستحق حتى اليوم فقط', session.length === 2 + 2, String(session.length));
+  check('الجلسة: الأقدم تأخرًا أولًا', session[0].review.nextDue <= session[session.length - 1].review.nextDue && session[session.length - 1].review.nextDue === '2026-10-21');
+  check('الجلسة حسب الوقت: دقيقة واحدة ثلاثة أبيات', (await srs.buildSession('2026-10-21', 1)).length === 3);
+  await poems.savePoem({ poet: 'زهير', ard: 'mashriq', status: 'wishlist', sectionSize: 4 }, six, sp.poem.id);
+  check('نقل القصيدة إلى «أريد حفظه» يُخرجها من الجلسة', mine(await srs.buildSession('2026-10-21')).length === 0);
+  const saved1 = await srs.saveRating(session[0].review, 'ataqtu', '2026-10-21');
+  check('حفظ التقييم', (await db.get('reviews', saved1.baytId)).lastReviewed === '2026-10-21');
+  await poems.deletePoem(sp.poem.id);
+  await poems.deletePoem(wish.poem.id);
 
   // ———— العرض ————
   const list = document.getElementById('results');
