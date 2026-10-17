@@ -37,6 +37,61 @@ a.zh-btn { text-decoration: none; }
 .file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .file-btn:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--raqq); }
 
+/* ———— عناصر مشتركة: الأزرار المقسّمة، ومربّع الاختيار ———— */
+.seg { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.seg__btn {
+  min-height: 44px; padding: 0 var(--space-3);
+  font-family: var(--font-ui); font-size: 15px; font-weight: 600;
+  background: transparent; color: var(--lazaward-ink);
+  border: var(--border-hair) solid var(--khatt-strong); border-radius: var(--radius-0); cursor: pointer;
+}
+.seg__btn[aria-pressed="true"] { background: var(--lazaward); border-color: var(--lazaward); color: var(--on-fill); }
+.check { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: 15px; cursor: pointer; }
+.check input, .choice__item input { width: 20px; height: 20px; accent-color: var(--lazaward); margin: 0; flex: none; }
+.seg__btn:focus-visible, .field__input:focus-visible, .poem-row:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--raqq);
+}
+
+/* ———— قائمة القصائد ———— */
+.poem-list { list-style: none; margin: 0; padding: 0; border-top: var(--border-hair) solid var(--khatt); }
+.poem-row {
+  display: grid; gap: var(--space-1); min-height: 44px; padding: var(--space-3) var(--space-1);
+  border-bottom: var(--border-hair) solid var(--khatt); color: var(--midad); text-decoration: none;
+}
+.poem-row__title { font-family: var(--font-kufi); font-size: 20px; line-height: 30px; font-weight: 600; }
+.poem-row--andalus .poem-row__title { font-family: var(--font-maghribi); font-size: 24px; line-height: 40px; font-weight: 400; }
+.poem-row__meta { font-size: 14px; line-height: 22px; color: var(--midad-muted); }
+
+/* ———— النموذج ———— */
+.form { display: grid; gap: var(--space-4); }
+.form > * { min-width: 0; }
+.form__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.form__row--source { grid-template-columns: 1fr 96px; }
+.field { display: grid; gap: var(--space-1); min-width: 0; }
+.field__label { font-size: 15px; line-height: 24px; font-weight: 600; }
+.field__hint { font-size: 13px; line-height: 20px; font-weight: 400; color: var(--midad-muted); }
+.field__input {
+  width: 100%; min-height: 44px; padding: var(--space-2) var(--space-3);
+  font-family: var(--font-matn); font-size: 17px; line-height: 28px; color: var(--midad);
+  background: var(--raqq-raised); border: var(--border-hair) solid var(--khatt-strong); border-radius: var(--radius-0);
+}
+.field__input--abyat { font-size: 17px; line-height: 32px; resize: vertical; }
+.choice { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin: 0; padding: 0; border: 0; }
+.choice legend { width: 100%; padding: 0; margin-bottom: var(--space-1); }
+.choice__item { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: 16px; cursor: pointer; }
+
+/* المعاينة بثوب الأرض: لوح بالظلّ للمشرق، ولوح مذهّب بشمستيه للأندلس */
+.preview { max-width: none; width: 100%; display: grid; gap: var(--space-3); padding: var(--space-6) 14px var(--space-4); }
+.preview--andalus { padding-top: var(--space-8); }
+.preview__count { margin: 0; font-size: 15px; line-height: 24px; color: var(--midad-muted); }
+.preview--andalus .preview__count { padding-inline: var(--space-6); }
+.preview__abyat { margin: 0; padding: 0; list-style: none; display: grid; }
+.preview__abyat .zh-bayt { font-size: 19px; line-height: 35px; border-top: 0; }
+.problems { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.problems:empty { display: none; }
+.problems__item { font-size: 15px; line-height: 24px; color: var(--qirmiz-ink); background: var(--qirmiz-soft); padding: var(--space-2) var(--space-3); }
+.problems__text { display: block; color: var(--midad); }
+
 /* ———— الافتتاح: شمسة تُرسم بالتِّبر ثم تمتلئ، في أقل من ثانية ———— */
 .splash {
   position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: var(--space-4);

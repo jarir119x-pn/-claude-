@@ -39,13 +39,17 @@
   }
 
   // ———— التنقل: كل شاشة قسم في index.html، والعنوان بعد # يختارها ————
-  const VIEWS = ['home', 'backup'];
+  // #home و#poems و#backup، و#add لقصيدة جديدة، و#edit/<المعرّف> لتعديل قصيدة
+  const VIEWS = ['home', 'poems', 'edit', 'backup'];
 
   function showView() {
-    const name = location.hash.slice(1);
-    const current = VIEWS.includes(name) ? name : 'home';
+    const [name, param] = location.hash.slice(1).split('/');
+    const current = name === 'add' ? 'edit' : (VIEWS.includes(name) ? name : 'home');
     for (const view of VIEWS) $(`view-${view}`).hidden = view !== current;
+    window.scrollTo(0, 0);
     if (current === 'home') renderHome();
+    if (current === 'poems') hifz.library.render();
+    if (current === 'edit') hifz.entry.open(name === 'edit' && param ? decodeURIComponent(param) : null);
   }
 
   // ———— الرئيسية ————

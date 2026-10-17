@@ -33,12 +33,90 @@
       <span class="due__count" id="due-count">٠</span>
     </div>
     <p class="stats"><span id="stat-poems">القصائد: ٠</span><span id="stat-abyat">الأبيات: ٠</span></p>
-    <p class="view__note" id="home-empty">لا قصائد بعد. ستُضاف شاشة إدخال القصائد في الدفعة القادمة.</p>
+    <p class="view__note" id="home-empty">لا قصائد بعد. ابدأ بإضافة قصيدة تحفظها، أو تريد حفظها.</p>
     <p class="status" id="home-status" aria-live="polite"></p>
     <div class="naqsh-fasil" aria-hidden="true"><span class="naqsh-fasil__najma"></span></div>
     <nav class="actions" aria-label="شاشات التطبيق">
+      <a class="zh-btn" href="#add">أضف قصيدة</a>
+      <a class="zh-btn zh-btn--secondary" href="#poems">قصائدي</a>
       <a class="zh-btn zh-btn--secondary" href="#backup">النسخ الاحتياطي</a>
     </nav>
+  </section>
+
+  <section class="view" id="view-poems" aria-labelledby="poems-title" hidden>
+    <h1 class="view__title" id="poems-title">قصائدي</h1>
+    <div class="seg" role="group" aria-label="نوع القصائد">
+      <button type="button" class="seg__btn" data-status="memorized" aria-pressed="true">المحفوظ <span id="count-memorized"></span></button>
+      <button type="button" class="seg__btn" data-status="wishlist" aria-pressed="false">أريد حفظه <span id="count-wishlist"></span></button>
+    </div>
+    <p class="status" id="poems-status" aria-live="polite"></p>
+    <ul class="poem-list" id="poem-list"></ul>
+    <p class="view__note" id="poems-empty" hidden></p>
+    <div class="actions">
+      <a class="zh-btn" href="#add">أضف قصيدة</a>
+      <a class="zh-btn zh-btn--secondary" href="#home">الرئيسية</a>
+    </div>
+  </section>
+
+  <section class="view" id="view-edit" aria-labelledby="edit-title" hidden>
+    <h1 class="view__title" id="edit-title">قصيدة جديدة</h1>
+    <form class="form" id="poem-form" novalidate>
+      <label class="field" for="f-poet"><span class="field__label">الشاعر</span>
+        <input class="field__input" id="f-poet" name="poet" autocomplete="off" required></label>
+      <label class="field" for="f-title"><span class="field__label">عنوان القصيدة <span class="field__hint">(اختياري: يُؤخذ من مطلعها)</span></span>
+        <input class="field__input" id="f-title" name="title" autocomplete="off"></label>
+
+      <fieldset class="choice"><legend class="field__label">الأرض</legend>
+        <label class="choice__item" for="f-ard-mashriq"><input type="radio" id="f-ard-mashriq" name="ard" value="mashriq" checked> المشرق</label>
+        <label class="choice__item" for="f-ard-andalus"><input type="radio" id="f-ard-andalus" name="ard" value="andalus"> الأندلس والمغرب</label>
+      </fieldset>
+      <fieldset class="choice"><legend class="field__label">الحالة</legend>
+        <label class="choice__item" for="f-status-memorized"><input type="radio" id="f-status-memorized" name="status" value="memorized" checked> أحفظها</label>
+        <label class="choice__item" for="f-status-wishlist"><input type="radio" id="f-status-wishlist" name="status" value="wishlist"> أريد حفظها</label>
+      </fieldset>
+
+      <div class="form__row">
+        <label class="field" for="f-era"><span class="field__label">العصر</span>
+          <input class="field__input" id="f-era" name="era" list="list-eras" autocomplete="off"></label>
+        <label class="field" for="f-bahr"><span class="field__label">البحر</span>
+          <input class="field__input" id="f-bahr" name="bahr" list="list-bahrs" autocomplete="off"></label>
+        <label class="field" for="f-qafiya"><span class="field__label">القافية</span>
+          <input class="field__input" id="f-qafiya" name="qafiya" autocomplete="off" placeholder="الميم"></label>
+        <label class="field" for="f-gharad"><span class="field__label">الغرض</span>
+          <input class="field__input" id="f-gharad" name="gharad" list="list-aghrad" autocomplete="off"></label>
+      </div>
+      <div class="form__row form__row--source">
+        <label class="field" for="f-book"><span class="field__label">الكتاب المصدر</span>
+          <input class="field__input" id="f-book" name="book" autocomplete="off"></label>
+        <label class="field" for="f-page"><span class="field__label">الصفحة</span>
+          <input class="field__input" id="f-page" name="page" inputmode="numeric" autocomplete="off"></label>
+      </div>
+      <datalist id="list-eras"><option value="الجاهلي"></option><option value="المخضرم"></option><option value="صدر الإسلام"></option><option value="الأموي"></option><option value="العباسي"></option><option value="الأندلسي"></option><option value="المملوكي"></option><option value="العثماني"></option><option value="الحديث"></option></datalist>
+      <datalist id="list-bahrs"><option value="الطويل"></option><option value="المديد"></option><option value="البسيط"></option><option value="الوافر"></option><option value="الكامل"></option><option value="الهزج"></option><option value="الرجز"></option><option value="الرمل"></option><option value="السريع"></option><option value="المنسرح"></option><option value="الخفيف"></option><option value="المضارع"></option><option value="المقتضب"></option><option value="المجتث"></option><option value="المتقارب"></option><option value="المتدارك"></option></datalist>
+      <datalist id="list-aghrad"><option value="المدح"></option><option value="الرثاء"></option><option value="الغزل"></option><option value="الفخر"></option><option value="الهجاء"></option><option value="الوصف"></option><option value="الحكمة"></option><option value="الزهد"></option><option value="الاعتذار"></option><option value="الحماسة"></option><option value="الشكوى"></option><option value="الحنين"></option></datalist>
+
+      <label class="field" for="f-abyat"><span class="field__label">الأبيات</span>
+        <textarea class="field__input field__input--abyat" id="f-abyat" name="abyat" rows="8" spellcheck="false"
+          placeholder="الْخَيْلُ وَاللَّيْلُ وَالْبَيْداءُ تَعْرِفُنِي * وَالسَّيْفُ وَالرُّمْحُ وَالْقِرْطاسُ وَالْقَلَمُ"></textarea>
+        <span class="field__hint">كل سطر بيت، وبين الشطرين * أو ... أو علامة جدولة أو ثلاث مسافات. يمكنك لصق القصيدة كاملة.</span>
+      </label>
+      <label class="check" for="f-shatr-per-line"><input type="checkbox" id="f-shatr-per-line"> كل شطر في سطر مستقل</label>
+
+      <div class="preview zh-lawh zh-lawh--abbasi" id="preview" aria-live="polite">
+        <span class="zh-lawh__corner zh-lawh__corner--start" aria-hidden="true"></span>
+        <span class="zh-lawh__corner zh-lawh__corner--end" aria-hidden="true"></span>
+        <p class="preview__count" id="preview-count">اكتب الأبيات أو الصقها لترى تقسيمها هنا قبل الحفظ.</p>
+        <ul class="problems" id="problems"></ul>
+        <ol class="preview__abyat" id="preview-abyat"></ol>
+      </div>
+
+      <p class="status" id="edit-status" aria-live="polite"></p>
+      <div class="actions">
+        <button type="submit" class="zh-btn" id="save-btn">احفظ القصيدة</button>
+        <button type="button" class="zh-btn zh-btn--secondary" id="delete-btn" hidden>احذف القصيدة</button>
+        <a class="zh-btn zh-btn--secondary" href="#poems">رجوع</a>
+      </div>
+    </form>
   </section>
 
   <section class="view" id="view-backup" aria-labelledby="backup-title" hidden>
@@ -62,6 +140,10 @@
 <script src="src/model.js"></script>
 <script src="src/db.js"></script>
 <script src="src/backup.js"></script>
+<script src="src/parse.js"></script>
+<script src="src/poems.js"></script>
+<script src="src/entry.js"></script>
+<script src="src/library.js"></script>
 <script src="src/app.js"></script>
 </body>
 </html>

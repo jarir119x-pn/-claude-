@@ -85,6 +85,23 @@
     await finished(tx);
   }
 
+  // يكتب ويحذف في عدة مخازن بمعاملة واحدة: ينجح كله أو لا يتغير شيء
+  async function commit({ put: puts = {}, remove: removes = {} }) {
+    const names = [...new Set([...Object.keys(puts), ...Object.keys(removes)])];
+    if (!names.length) return;
+    const db = await open();
+    const tx = db.transaction(names, 'readwrite');
+    for (const [name, records] of Object.entries(puts)) {
+      const store = tx.objectStore(name);
+      for (const record of records) store.put(record);
+    }
+    for (const [name, keys] of Object.entries(removes)) {
+      const store = tx.objectStore(name);
+      for (const key of keys) store.delete(key);
+    }
+    await finished(tx);
+  }
+
   async function abyatOfPoem(poemId) {
     const db = await open();
     const index = db.transaction('abyat').objectStore('abyat').index('poemId');
@@ -99,5 +116,5 @@
     return done(index.getAll(IDBKeyRange.upperBound(untilDay)));
   }
 
-  hifz.db = { STORES: Object.keys(STORES), open, get, getAll, count, put, remove, putMany, abyatOfPoem, dueReviews };
+  hifz.db = { STORES: Object.keys(STORES), open, get, getAll, count, put, remove, putMany, commit, abyatOfPoem, dueReviews };
 })(window.hifz = window.hifz || {});

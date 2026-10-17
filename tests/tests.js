@@ -2,7 +2,7 @@
 
 // اختبارات تعمل في المتصفح بلا أدوات: افتح tests/index.html من استضافة.
 (async function () {
-  const { arabic, model, db, backup } = window.hifz;
+  const { arabic, model, db, backup, parse, poems } = window.hifz;
   const results = [];
   const check = (name, condition, detail = '') => results.push({ name, ok: Boolean(condition), detail });
   const throws = async (fn) => { try { await fn(); return null; } catch (e) { return e; } };
@@ -51,6 +51,56 @@
   const badArd = JSON.parse(JSON.stringify(exported));
   badArd.poems[0].ard = 'misr';
   check('أرض غير معروفة في الملف تُرفض', await throws(() => backup.importData(badArd)));
+
+  // ———— تقسيم القصيدة الملصوقة ————
+  const pasted = [
+    '١- الْخَيْلُ وَاللَّيْلُ وَالْبَيْداءُ تَعْرِفُنِي * وَالسَّيْفُ وَالرُّمْحُ وَالْقِرْطاسُ وَالْقَلَمُ',
+    '',
+    'السَّيْفُ أَصْدَقُ أَنْباءً مِنَ الْكُتُبِ ... فِي حَدِّهِ الْحَدُّ بَيْنَ الْجِدِّ وَاللَّعِبِ',
+    'لِكُلِّ شَيْءٍ إِذا ما تَمَّ نُقْصانُ\tفَلا يُغَرَّ بِطِيبِ الْعَيْشِ إِنْسانُ',
+    'يا أَهْلَ أَنْدَلُسٍ لِلَّهِ دَرُّكُمُ     ماءٌ وَظِلٌّ وَأَنْهارٌ وَأَشْجارُ',
+    'مِكَرٍّ مِفَرٍّ مُقْبِلٍ مُدْبِرٍ مَعًا … كَجُلْمُودِ صَخْرٍ حَطَّهُ السَّيْلُ مِنْ عَلِ',
+    'بيت بلا فاصل بين شطريه',
+  ].join('\n');
+  const p1 = parse.parsePoemText(pasted);
+  check('اللصق: خمسة أبيات بفواصل مختلفة', p1.abyat.length === 5, JSON.stringify(p1));
+  check('اللصق: الترقيم في أول السطر يُحذف', p1.abyat[0].sadr.startsWith('الْخَيْلُ'));
+  check('اللصق: السطر الفارغ يُتجاهل', p1.abyat[1].sadr.startsWith('السَّيْفُ'));
+  check('اللصق: التشكيل يبقى', p1.abyat[2].ajuz === 'فَلا يُغَرَّ بِطِيبِ الْعَيْشِ إِنْسانُ');
+  check('اللصق: سطر بلا فاصل مشكلة برقم سطره', p1.problems.length === 1 && p1.problems[0].line === 7);
+  const p2 = parse.parsePoemText('صدر أول\nعجز أول\nصدر ثان\nعجز ثان', { shatrPerLine: true });
+  check('كل شطر في سطر', p2.abyat.length === 2 && p2.abyat[1].ajuz === 'عجز ثان' && !p2.problems.length);
+  const p3 = parse.parsePoemText('صدر * عجز * زيادة');
+  check('أكثر من فاصل مشكلة', p3.problems.length === 1 && !p3.abyat.length);
+  const roundTrip = parse.parsePoemText(parse.abyatToText(p1.abyat));
+  check('النص للتعديل يُقسَّم كما كان', roundTrip.abyat.length === 5 && roundTrip.abyat[4].ajuz === p1.abyat[4].ajuz);
+
+  // ———— حفظ القصيدة وتعديلها ————
+  const fields = { poet: 'المتنبي', title: '', ard: 'mashriq', status: 'memorized' };
+  const three = parse.parsePoemText('أ1 * ب1\nأ2 * ب2\nأ3 * ب3').abyat;
+  const saved = await poems.savePoem(fields, three);
+  check('العنوان الفارغ يُؤخذ من المطلع', saved.poem.title === 'أ1');
+  const ids = saved.abyat.map((b) => b.id);
+  await db.put('reviews', model.createReview({ baytId: ids[1], nextDue: '2026-10-20' }));
+
+  const inserted = parse.parsePoemText('أ1 * ب1\nجديد * جديد\nأ2 * ب2\nأ3 * ب3').abyat;
+  const edited = await poems.savePoem(fields, inserted, saved.poem.id);
+  check('إدراج بيت في الوسط يحفظ معرّفات ما بعده', edited.abyat[2].id === ids[1] && edited.abyat[3].id === ids[2] && edited.abyat[1].id !== ids[1]);
+  check('الترتيب يتجدد بعد الإدراج', edited.abyat.map((b) => b.order).join() === '1,2,3,4');
+
+  const fixed = parse.parsePoemText('أ1 * ب1\nجديد * جديد\nأ2مصحح * ب2مصحح\nأ3 * ب3').abyat;
+  const edited2 = await poems.savePoem(fields, fixed, saved.poem.id);
+  check('تصحيح الشطرين معًا يحفظ المعرّف بالموضع', edited2.abyat[2].id === ids[1]);
+  check('مراجعة البيت المصحَّح باقية', Boolean(await db.get('reviews', ids[1])));
+
+  const shorter = parse.parsePoemText('أ1 * ب1\nأ3 * ب3').abyat;
+  const edited3 = await poems.savePoem(fields, shorter, saved.poem.id);
+  check('حذف بيت يحذفه مع مراجعته', edited3.removed === 2 && !(await db.get('reviews', ids[1])) && (await db.abyatOfPoem(saved.poem.id)).length === 2);
+  check('حفظ بلا شاعر يُرفض', await throws(() => poems.savePoem({ ...fields, poet: ' ' }, three)));
+  const listed = await poems.listPoems();
+  check('القائمة تحمل عدد الأبيات', listed.find((p) => p.id === saved.poem.id).abyatCount === 2);
+  await poems.deletePoem(saved.poem.id);
+  check('حذف القصيدة يحذف أبياتها', !(await db.get('poems', saved.poem.id)) && !(await db.abyatOfPoem(saved.poem.id)).length);
 
   // ———— العرض ————
   const list = document.getElementById('results');
