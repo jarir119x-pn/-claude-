@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 144" width="96" height="144">
+<defs><g id="f"><path d="M53,134 C57,110 58,74 60,52 C62,30 76,16 87,22 C95,27 93,40 84,40 C78,40 78,32 83,32 C80,36 86,44 89,58 C93,82 80,112 53,134 Z"></path><path d="M48,40 C52,52 54,72 53,92 C52,106 50,116 48,124 C46,116 44,106 43,92 C42,72 44,52 48,40 Z"></path><path d="M30,118 C38,132 44,138 48,140 C52,138 58,132 66,118 C60,126 54,130 48,131 C42,130 36,126 30,118 Z"></path><path d="M53,134 C57,110 58,74 60,52 C62,30 76,16 87,22 C95,27 93,40 84,40 C78,40 78,32 83,32 C80,36 86,44 89,58 C93,82 80,112 53,134 Z" transform="translate(96,0) scale(-1,1)"></path></g>
+<mask id="rim" maskUnits="userSpaceOnUse" x="0" y="0" width="96" height="144"><use href="#f" fill="#fff"></use><use href="#f" fill="#000" transform="translate(-4,-4)"></use></mask></defs>
+<use href="#f" fill="none" stroke="#1E1912" stroke-width="1" stroke-opacity=".45"></use>
+<rect width="96" height="144" fill="#1E1912" fill-opacity=".85" mask="url(#rim)"></rect>
+<g fill="#1E1912"><circle cx="0" cy="96" r="1.8"></circle><circle cx="-4" cy="103" r="1.8"></circle><circle cx="4" cy="103" r="1.8"></circle><circle cx="96" cy="96" r="1.8"></circle><circle cx="92" cy="103" r="1.8"></circle><circle cx="100" cy="103" r="1.8"></circle><circle cx="16" cy="138" r="1.8"></circle><circle cx="80" cy="138" r="1.8"></circle></g>
+</svg>

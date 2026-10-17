@@ -1,0 +1,147 @@
+/* الزوراء والحمراء — مولَّد من tokens.json، لا يُعدَّل يدويًّا */
+
+@font-face { font-family: "Rabat"; src: url("fonts/Rabat.otf") format("opentype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Kufam"; src: url("fonts/Kufam-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Kufam"; src: url("fonts/Kufam-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Kufam"; src: url("fonts/Kufam-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Kufam"; src: url("fonts/Kufam-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Reem Kufi"; src: url("fonts/ReemKufi-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Reem Kufi"; src: url("fonts/ReemKufi-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Reem Kufi"; src: url("fonts/ReemKufi-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Reem Kufi"; src: url("fonts/ReemKufi-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+
+:root {
+  --font-kufi: "Reem Kufi", "Kufam", sans-serif;
+  --font-matn: "Kufam", system-ui, sans-serif;
+  --font-ui: "Kufam", system-ui, sans-serif;
+  --font-maghribi: "Rabat", "Kufam", serif;
+  --nuqta: 4px;
+  --alif: 32px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-0: 0px;
+  --radius-sm: 2px;
+  --radius-arch: 50%;
+  --border-hair: 1px;
+  --border-rule: 2px;
+  --border-band: 24px;
+  --raqq: #F4EBD8;
+  --raqq-raised: #FBF5E8;
+  --jiss: #E7D9B9;
+  --khatt: #C9B489;
+  --khatt-strong: #8C7650;
+  --midad: #1E1912;
+  --midad-muted: #5B4F3E;
+  --lazaward: #1F3D7A;
+  --lazaward-deep: #132953;
+  --lazaward-soft: #DCE3F1;
+  --lazaward-ink: #1F3D7A;
+  --dhahab: #A87A28;
+  --dhahab-ink: #7A5617;
+  --tibr: #D9AE5C;
+  --qirmiz: #9A3324;
+  --qirmiz-soft: #F2D9CF;
+  --qirmiz-ink: #9A3324;
+  --zumurrud: #2B654A;
+  --zumurrud-soft: #D5E8DC;
+  --zumurrud-ink: #2B654A;
+  --ajurr: #C49C6C;
+  --turab: #D4A47E;
+  --on-tin: #1E1912;
+  --zill: #4A3322;
+  --hamra: #B4826B;
+  --arz: #5E3B22;
+  --asali: #98733D;
+  --fayruzi: #3F8584;
+  --sawad: #16130F;
+  --fidda: #C3C6CA;
+  --on-fill: #FBF5E8;
+  --on-deep: #FBF5E8;
+  --link: var(--lazaward-ink);
+  --focus: var(--dhahab);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --raqq: #10131D;
+  --raqq-raised: #181C2A;
+  --jiss: #222738;
+  --khatt: #3A3F52;
+  --khatt-strong: #737891;
+  --midad: #F1E6CF;
+  --midad-muted: #B8AA8E;
+  --lazaward: #2C4F9A;
+  --lazaward-deep: #1A2E5E;
+  --lazaward-soft: #1E2A4C;
+  --lazaward-ink: #A9BEEB;
+  --dhahab: #D9AE5C;
+  --dhahab-ink: #E2BD74;
+  --tibr: #E2BD74;
+  --qirmiz: #A63E2C;
+  --qirmiz-soft: #3F1D17;
+  --qirmiz-ink: #E8937C;
+  --zumurrud: #2F7356;
+  --zumurrud-soft: #14322A;
+  --zumurrud-ink: #86CDA8;
+  --ajurr: #A8845A;
+  --turab: #B5876A;
+  --on-tin: #1E1912;
+  --zill: #0B0807;
+  --hamra: #9C6E59;
+  --arz: #6B4429;
+  --asali: #A8834B;
+  --fayruzi: #4A9693;
+  --sawad: #08090D;
+  --fidda: #C3C6CA;
+  --on-fill: #F4EBD8;
+  --on-deep: #F1E6CF;
+  --link: var(--lazaward-ink);
+  --focus: var(--dhahab);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --raqq: #10131D;
+    --raqq-raised: #181C2A;
+    --jiss: #222738;
+    --khatt: #3A3F52;
+    --khatt-strong: #737891;
+    --midad: #F1E6CF;
+    --midad-muted: #B8AA8E;
+    --lazaward: #2C4F9A;
+    --lazaward-deep: #1A2E5E;
+    --lazaward-soft: #1E2A4C;
+    --lazaward-ink: #A9BEEB;
+    --dhahab: #D9AE5C;
+    --dhahab-ink: #E2BD74;
+    --tibr: #E2BD74;
+    --qirmiz: #A63E2C;
+    --qirmiz-soft: #3F1D17;
+    --qirmiz-ink: #E8937C;
+    --zumurrud: #2F7356;
+    --zumurrud-soft: #14322A;
+    --zumurrud-ink: #86CDA8;
+    --ajurr: #A8845A;
+    --turab: #B5876A;
+    --on-tin: #1E1912;
+    --zill: #0B0807;
+    --hamra: #9C6E59;
+    --arz: #6B4429;
+    --asali: #A8834B;
+    --fayruzi: #4A9693;
+    --sawad: #08090D;
+    --fidda: #C3C6CA;
+    --on-fill: #F4EBD8;
+    --on-deep: #F1E6CF;
+    --link: var(--lazaward-ink);
+    --focus: var(--dhahab);
+    color-scheme: dark;
+  }
+}
