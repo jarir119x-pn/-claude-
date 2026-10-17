@@ -67,5 +67,36 @@
       .sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt)));
   }
 
-  hifz.poems = { savePoem, deletePoem, listPoems };
+  // ———— البحث والتصنيف ————
+  const { normalizeForSearch } = hifz.arabic;
+  const UNSET = 'غير محدد';
+
+  const facetValue = (poem, facet) => String((facet === 'book' ? poem.source && poem.source.book : poem[facet]) || '').trim() || UNSET;
+
+  // تطابق القصيدة إن وُجدت الكلمة في عنوانها أو شاعرها أو قافيتها أو بحرها أو عصرها أو غرضها أو كتابها،
+  // أو في أحد أبياتها، فيُرجَع أول بيت مطابق ليُعرض تحتها
+  function matchPoem(poem, abyat, query) {
+    const q = normalizeForSearch(query);
+    if (!q) return { poem, bayt: null };
+    const fields = [poem.title, poem.poet, poem.qafiya, poem.bahr, poem.era, poem.gharad, poem.source && poem.source.book];
+    if (fields.some((f) => normalizeForSearch(f || '').includes(q))) return { poem, bayt: null };
+    const bayt = abyat.find((b) => normalizeForSearch(b.sadr).includes(q) || normalizeForSearch(b.ajuz).includes(q));
+    return bayt ? { poem, bayt } : null;
+  }
+
+  // يجمع النتائج في مجموعات بحسب الحقل، مرتبة أبجديًّا و«غير محدد» آخرها. بلا حقل: مجموعة واحدة
+  function groupResults(results, facet) {
+    if (!facet) return [{ name: '', items: results }];
+    const groups = new Map();
+    for (const r of results) {
+      const name = facetValue(r.poem, facet);
+      if (!groups.has(name)) groups.set(name, []);
+      groups.get(name).push(r);
+    }
+    return [...groups.entries()]
+      .map(([name, items]) => ({ name, items }))
+      .sort((a, b) => (a.name === UNSET) - (b.name === UNSET) || a.name.localeCompare(b.name, 'ar'));
+  }
+
+  hifz.poems = { savePoem, deletePoem, listPoems, matchPoem, groupResults, UNSET };
 })(window.hifz = window.hifz || {});

@@ -101,6 +101,20 @@
     return items.slice(0, limit);
   }
 
+  // مراجعة عشوائية من أي قصيدة: أبيات مجدولة من القصائد المحفوظة، مستحقة أو لا.
+  // تدريب حرّ لا يُحفظ تقييمه، فلا يغيّر المواعيد
+  async function randomSession(count = 10, random = Math.random) {
+    const pool = await buildSession('9999-12-31');
+    for (let i = pool.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, count);
+  }
+
+  // كل الأبيات المجدولة من القصائد المحفوظة، مستحقة أو لا
+  const scheduledCount = async () => (await buildSession('9999-12-31')).length;
+
   async function saveRating(review, rating, day = today()) {
     const next = rate(review, rating, day);
     await db.put('reviews', next);
@@ -109,6 +123,6 @@
 
   hifz.srs = {
     RATINGS, RASIKH_DAYS, SECONDS_PER_BAYT, DEFAULT_SECTION_SIZE,
-    today, addDays, rate, isRasikh, sectionsOf, ensureSchedule, buildSession, saveRating,
+    today, addDays, rate, isRasikh, sectionsOf, ensureSchedule, buildSession, randomSession, scheduledCount, saveRating,
   };
 })(window.hifz = window.hifz || {});

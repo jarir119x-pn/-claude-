@@ -2,7 +2,7 @@
 
 // يخزّن ملفات التطبيق كلها عند أول فتح، فيعمل بعده دون إنترنت.
 // عند كل إصدار جديد: ارفع رقم CACHE_VERSION، وأضف إلى FILES كل ملف جديد.
-const CACHE_VERSION = 3;
+const CACHE_VERSION = 4;
 const CACHE = `hifz-alshir-v${CACHE_VERSION}`;
 
 const FILES = [

@@ -160,6 +160,40 @@
   await poems.deletePoem(sp.poem.id);
   await poems.deletePoem(wish.poem.id);
 
+  // ———— البحث والتصنيف ————
+  const qPoem = { title: 'واحرّ قلباه', poet: 'المتنبي', qafiya: 'الميم', bahr: 'البسيط', era: 'العباسي', gharad: 'العتاب', source: { book: 'الديوان' } };
+  const qAbyat = [{ sadr: 'الْخَيْلُ وَاللَّيْلُ وَالْبَيْداءُ تَعْرِفُنِي', ajuz: 'وَالسَّيْفُ وَالرُّمْحُ وَالْقِرْطاسُ وَالْقَلَمُ' }];
+  check('البحث بالشاعر', poems.matchPoem(qPoem, qAbyat, 'المتنبي') && !poems.matchPoem(qPoem, qAbyat, 'المتنبي').bayt);
+  check('البحث بالقافية', Boolean(poems.matchPoem(qPoem, qAbyat, 'الميم')));
+  const inBayt = poems.matchPoem(qPoem, qAbyat, 'القرطاس');
+  check('البحث بكلمة من البيت يُرجع البيت', inBayt && inBayt.bayt === qAbyat[0]);
+  check('البحث يتجاهل التشكيل والهمزة', Boolean(poems.matchPoem(qPoem, qAbyat, 'البيداء')) && Boolean(poems.matchPoem({ ...qPoem, title: 'أنباء' }, [], 'انباء')));
+  check('لا تطابق', poems.matchPoem(qPoem, qAbyat, 'زهير') === null);
+  check('البحث الفارغ يطابق الكل', Boolean(poems.matchPoem(qPoem, qAbyat, '  ')));
+  const grouped = poems.groupResults([
+    { poem: { poet: 'المتنبي', bahr: 'الطويل', source: {} } },
+    { poem: { poet: 'أبو تمام', bahr: '', source: {} } },
+    { poem: { poet: 'المتنبي', bahr: 'البسيط', source: {} } },
+  ], 'poet');
+  check('التصنيف بالشاعر', grouped.length === 2 && grouped.find((g) => g.name === 'المتنبي').items.length === 2);
+  const byBahr = poems.groupResults([{ poem: { bahr: '', source: {} } }, { poem: { bahr: 'الطويل', source: {} } }], 'bahr');
+  check('«غير محدد» آخر المجموعات', byBahr[byBahr.length - 1].name === poems.UNSET);
+  check('بلا تصنيف: مجموعة واحدة', poems.groupResults([1, 2].map(() => ({ poem: {} })), '').length === 1);
+
+  // ———— أساليب الاختبار ————
+  check('الكلمات', arabic.words(' الْخَيْلُ  وَاللَّيْلُ ').length === 2);
+  const fl = arabic.firstLetter('الْخَيْلُ');
+  check('الحرف الأول', fl.awwal === 'ا' && fl.baqi === 'لْخَيْلُ');
+  check('الحرف الأول بحركاته', arabic.firstLetter('مِكَرٍّ').awwal === 'مِ' && arabic.firstLetter('وَالسَّيْفُ').awwal === 'وَ');
+  const rp = await poems.savePoem({ poet: 'عشوائي', ard: 'mashriq', status: 'memorized', sectionSize: 2 }, parse.parsePoemText('ع1 * ع1\nع2 * ع2\nع3 * ع3').abyat);
+  await srs.ensureSchedule('2026-10-17');
+  const before = await db.get('reviews', rp.abyat[0].id);
+  const randomItems = (await srs.randomSession(50)).filter((it) => it.poem.id === rp.poem.id);
+  check('العشوائية من المجدول وحده', randomItems.length === 2);
+  check('العشوائية لا تغيّر المواعيد', JSON.stringify(await db.get('reviews', rp.abyat[0].id)) === JSON.stringify(before));
+  check('عدد المجدول', (await srs.scheduledCount()) >= 2);
+  await poems.deletePoem(rp.poem.id);
+
   // ———— العرض ————
   const list = document.getElementById('results');
   for (const r of results) {

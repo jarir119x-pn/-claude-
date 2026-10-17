@@ -34,6 +34,14 @@
     </div>
     <p class="stats"><span id="stat-poems">القصائد: ٠</span><span id="stat-abyat">الأبيات: ٠</span></p>
     <div class="start" id="start" hidden>
+      <label class="field start__mode" for="mode"><span class="field__label">طريقة الاختبار</span>
+        <select class="field__input" id="mode">
+          <option value="ajuz">يظهر الصدر، فتستحضر العجز</option>
+          <option value="sadr">يظهر العجز، فتستحضر الصدر</option>
+          <option value="awail">الحروف الأولى من كل كلمة</option>
+          <option value="tadrij">الإخفاء التدريجي كلمةً كلمة</option>
+          <option value="rabt">ربط الأبيات: السابق ثم التالي</option>
+        </select></label>
       <div class="seg seg--center" id="duration" role="group" aria-label="مدة المراجعة">
         <button type="button" class="seg__btn" data-minutes="0">الكل</button>
         <button type="button" class="seg__btn" data-minutes="5">٥ دقائق</button>
@@ -47,6 +55,7 @@
     <div class="naqsh-fasil" aria-hidden="true"><span class="naqsh-fasil__najma"></span></div>
     <nav class="actions" aria-label="شاشات التطبيق">
       <a class="zh-btn" href="#review" id="start-btn" hidden>ابدأ المراجعة</a>
+      <a class="zh-btn zh-btn--secondary" href="#review/random" id="random-btn" hidden>مراجعة عشوائية</a>
       <a class="zh-btn" href="#add" id="add-btn">أضف قصيدة</a>
       <a class="zh-btn zh-btn--secondary" href="#poems">قصائدي</a>
       <a class="zh-btn zh-btn--secondary" href="#backup">النسخ الاحتياطي</a>
@@ -59,8 +68,22 @@
       <button type="button" class="seg__btn" data-status="memorized" aria-pressed="true">المحفوظ <span id="count-memorized"></span></button>
       <button type="button" class="seg__btn" data-status="wishlist" aria-pressed="false">أريد حفظه <span id="count-wishlist"></span></button>
     </div>
+    <div class="finder">
+      <label class="field" for="poems-search"><span class="field__label">ابحث</span>
+        <input class="field__input" id="poems-search" type="search" autocomplete="off" placeholder="كلمة من بيت، أو شاعر، أو قافية"></label>
+      <label class="field" for="poems-group"><span class="field__label">صنّف حسب</span>
+        <select class="field__input" id="poems-group">
+          <option value="">الأحدث</option>
+          <option value="poet">الشاعر</option>
+          <option value="bahr">البحر</option>
+          <option value="qafiya">القافية</option>
+          <option value="era">العصر</option>
+          <option value="gharad">الغرض</option>
+          <option value="book">الكتاب المصدر</option>
+        </select></label>
+    </div>
     <p class="status" id="poems-status" aria-live="polite"></p>
-    <ul class="poem-list" id="poem-list"></ul>
+    <div id="poem-groups"></div>
     <p class="view__note" id="poems-empty" hidden></p>
     <div class="actions">
       <a class="zh-btn" href="#add">أضف قصيدة</a>
@@ -145,12 +168,14 @@
         <span class="zh-badge" id="card-count"></span>
       </div>
       <h2 class="card__title" id="card-title"></h2>
+      <p class="card__context" id="card-context" hidden></p>
       <div class="zh-bayt">
-        <span class="zh-bayt__shatr" id="card-sadr"></span>
+        <span class="card__slot" id="slot-sadr"><span class="zh-bayt__shatr card__shatr" id="card-sadr"></span></span>
         <span class="zh-bayt__sep" aria-hidden="true"></span>
-        <span class="card__slot" id="card-slot"><span class="zh-bayt__shatr card__ajuz" id="card-ajuz"></span></span>
+        <span class="card__slot" id="slot-ajuz"><span class="zh-bayt__shatr card__shatr" id="card-ajuz"></span></span>
       </div>
       <button type="button" class="zh-btn card__reveal" id="reveal">اكشف العجز</button>
+      <button type="button" class="zh-btn card__reveal" id="next-btn" hidden>البيت التالي</button>
       <div class="rate" id="rate" role="group" aria-label="قيّم حفظك للبيت" hidden>
         <button type="button" class="rate__btn rate__btn--nasitu" data-rating="nasitu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M6 6L18 18M18 6L6 18"></path></svg>نسيته</button>
         <button type="button" class="rate__btn rate__btn--taraddadtu" data-rating="taraddadtu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 6V18M15 6V18"></path></svg>تردّدت</button>

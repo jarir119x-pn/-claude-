@@ -47,7 +47,7 @@
     if (current === 'home') renderHome();
     if (current === 'poems') hifz.library.render();
     if (current === 'edit') hifz.entry.open(name === 'edit' && param ? decodeURIComponent(param) : null);
-    if (current === 'review') hifz.review.start(Number(param) || 0);
+    if (current === 'review') hifz.review.start(param === 'random' ? 'random' : Number(param) || 0);
     if (current === 'done') hifz.review.renderDone();
   }
 
@@ -77,8 +77,9 @@
   async function renderHome() {
     try {
       await hifz.srs.ensureSchedule(today());
-      const [session, poems, abyat] = await Promise.all([
+      const [session, scheduled, poems, abyat] = await Promise.all([
         hifz.srs.buildSession(today()),
+        hifz.srs.scheduledCount(),
         hifz.db.count('poems'),
         hifz.db.count('abyat'),
       ]);
@@ -87,9 +88,14 @@
       $('stat-poems').textContent = `القصائد: ${toHindiDigits(poems)}`;
       $('stat-abyat').textContent = `الأبيات: ${toHindiDigits(abyat)}`;
       $('home-empty').hidden = poems > 0;
-      // زرّ رئيس واحد في الشاشة: المراجعة إن حان شيء، وإلا الإضافة
-      $('start').hidden = !dueCount;
+      // زرّ رئيس واحد في الشاشة: المراجعة إن حان شيء، وإلا الإضافة.
+      // طريقة الاختبار والمراجعة العشوائية تظهران متى وُجد بيت مجدول، ولو لم يحن موعده
+      $('start').hidden = !scheduled;
+      $('duration').hidden = !dueCount;
+      $('duration-note').hidden = !dueCount;
       $('start-btn').hidden = !dueCount;
+      $('random-btn').hidden = !scheduled;
+      $('mode').value = hifz.review.getMode();
       $('add-btn').classList.toggle('zh-btn--secondary', dueCount > 0);
       renderDuration();
       setBadge(dueCount);
@@ -97,6 +103,8 @@
       showStatus('home-status', 'تعذّر فتح المحفوظات على هذا الجهاز. تأكد أن المتصفح لا يمنع حفظ البيانات.', true);
     }
   }
+
+  $('mode').addEventListener('change', () => hifz.review.setMode($('mode').value));
 
   $('duration').addEventListener('click', (event) => {
     const btn = event.target.closest('[data-minutes]');

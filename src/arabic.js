@@ -21,6 +21,18 @@
     return String(text).replace(HARAKAT, '');
   }
 
+  // كلمات الشطر بالترتيب، للإخفاء التدريجي والحروف الأولى (كلمةً كلمة لا حرفًا حرفًا)
+  function words(text) {
+    return String(text).split(/\s+/).filter(Boolean);
+  }
+
+  // أول حرف من الكلمة مع حركاته، وبقيتها: { awwal, baqi }
+  function firstLetter(word) {
+    const match = String(word).match(/^[^\u064B-\u0652\u0670][\u064B-\u0652\u0670]*/);
+    const awwal = match ? match[0] : '';
+    return { awwal, baqi: String(word).slice(awwal.length) };
+  }
+
   // البحث يتجاهل التشكيل والتطويل والهمزات، فيُطابق «الخيل» «الخَيْلُ» و«أنباء» «انباء»
   function normalizeForSearch(text) {
     return stripTashkeel(text)
@@ -34,5 +46,5 @@
       .trim();
   }
 
-  hifz.arabic = { toHindiDigits, fromHindiDigits, stripTashkeel, normalizeForSearch };
+  hifz.arabic = { toHindiDigits, fromHindiDigits, stripTashkeel, normalizeForSearch, words, firstLetter };
 })(window.hifz = window.hifz || {});
