@@ -1,5 +1,29 @@
 /* نموذج بطاقة البيت — أنماط فوق design/bundle.css. كل لون وقياس من tokens.css. */
 
+/* نقش الظلّ العباسي: zill نهارًا، ويختفي zill على الليل فيصير khatt-strong */
+:root { --naqsh-zill: var(--zill); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --naqsh-zill: var(--khatt-strong); } }
+:root[data-theme="dark"] { --naqsh-zill: var(--khatt-strong); }
+
+/* ———— تاج المقرنص: أعلى الشاشة الرئيسية، بارتفاع يُجرَّب ٤٨ أو ٦٤ ———— */
+.crown { --crown-h: 48px; height: var(--crown-h); }
+.crown.zh-muqarnas::before { -webkit-mask-size: calc(var(--crown-h) / 2) var(--crown-h); mask-size: calc(var(--crown-h) / 2) var(--crown-h); }
+
+/* ———— الافتتاح: شمسة تُرسم بالذهب ثم تمتلئ، في أقل من ثانية ———— */
+.splash {
+  position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: var(--space-4);
+  background: var(--lazaward-deep); color: var(--tibr); cursor: pointer;
+  animation: splash-out 150ms linear 800ms forwards;
+}
+.splash.is-leaving { animation: splash-out 120ms linear forwards; }
+.splash__shamsa { width: 120px; height: 120px; }
+.splash__line { fill: none; stroke: currentColor; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 450ms cubic-bezier(.2, .7, .2, 1) forwards; }
+.splash__core { fill: currentColor; opacity: 0; animation: fill-in 250ms linear 400ms forwards; }
+.splash__name { margin: 0; font-family: var(--font-kufi); font-size: 44px; line-height: 60px; font-weight: 600; color: var(--on-deep); opacity: 0; animation: fill-in 300ms linear 300ms forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fill-in { to { opacity: 1; } }
+@keyframes splash-out { to { opacity: 0; visibility: hidden; } }
+
 .page {
   --bayt-size: 19px;
   --bayt-lh: 35px;
@@ -13,7 +37,7 @@
   gap: var(--space-4);
 }
 .page *, .page *::before, .page *::after { box-sizing: border-box; }
-.page [hidden] { display: none !important; }
+[hidden] { display: none !important; }
 .page > *, .lab > *, .lab__block > * { min-width: 0; }
 
 /* ———— الشريط العلوي ———— */
@@ -70,6 +94,24 @@
 
 .card__reveal { width: 100%; min-height: 48px; justify-content: center; }
 
+/* ———— حاشية البطاقة: نقش في القاعدة لا تحت الأبيات ———— */
+/* المسارات صريحة: url() داخل متغيّرات bundle.css يُحسب من هذا الملف لا من design/ */
+/* المشرق: صفّ النقط المحفورة بالظلّ */
+.card__foot { height: 16px; background: var(--naqsh-zill);
+  -webkit-mask: url("../design/ornaments/drill-holes.svg") center 0 / 48px 48px repeat-x; mask: url("../design/ornaments/drill-holes.svg") center 0 / 48px 48px repeat-x; }
+/* الأندلس: الإزار المسنّن، خزف ثابت الألوان */
+.card--andalus .card__foot { height: 21px; -webkit-mask: none; mask: none;
+  background: url("../design/ornaments/izar-crest.svg") center 0 / 18px 21px repeat-x; }
+/* ليلًا يبدو الإزار شريطًا فاتحًا فاقعًا، فتحلّ محلّه الضفيرة بالذهب */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .page:not(.is-izar-night) .card--andalus .card__foot {
+    height: 20px; background: var(--dhahab);
+    -webkit-mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; }
+}
+:root[data-theme="dark"] .page:not(.is-izar-night) .card--andalus .card__foot {
+  height: 20px; background: var(--dhahab);
+  -webkit-mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; mask: url("../design/ornaments/dafira-band.svg") center 0 / auto 20px repeat-x; }
+
 /* ———— أزرار التقييم: تختلف في الإضاءة والأيقونة والكلمة ———— */
 /* الأوسط محايد، فلا يتجاور القرمز والزمرّد */
 .rate { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
@@ -110,6 +152,7 @@
 }
 .seg__btn[aria-pressed="true"] { background: var(--lazaward); border-color: var(--lazaward); color: var(--on-fill); }
 
+.lab__action { justify-self: start; min-height: 44px; }
 .check { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: 15px; cursor: pointer; }
 .check input { width: 20px; height: 20px; accent-color: var(--lazaward); margin: 0; }
 
@@ -141,4 +184,6 @@
 @media (prefers-reduced-motion: reduce) {
   .card__slot.is-shown .card__ajuz { animation: none; -webkit-text-stroke-width: 0; }
   .card__slot::after { transition: none; }
+  .splash__line { animation: none; stroke-dashoffset: 0; }
+  .splash__core, .splash__name { animation: none; opacity: 1; }
 }

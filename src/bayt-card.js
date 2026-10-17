@@ -42,8 +42,10 @@
     { value: 'dark', label: 'ليل' },
   ];
   const THEME_KEY = 'hifz.theme';
+  const SPLASH_KEY = 'hifz.splashDay';
+  const SPLASH_MS = 950;
 
-  const state = { index: 0, tashkeel: true, size: 19, themeIndex: 0 };
+  const state = { index: 0, tashkeel: true, size: 19, themeIndex: 0, crown: 48 };
   const $ = (id) => document.getElementById(id);
   const els = {
     page: $('page'), card: $('card'), poet: $('card-poet'), bahr: $('card-bahr'),
@@ -52,7 +54,8 @@
     sadr: $('sadr'), ajuz: $('ajuz'), slot: $('ajuz-slot'), reveal: $('reveal'), rate: $('rate'),
     status: $('status'), tashkeel: $('tashkeel-toggle'), theme: $('theme-toggle'),
     sizes: $('size-picker'), compact: $('compact-toggle'), widthNote: $('width-note'),
-    table: $('fit-table'),
+    table: $('fit-table'), crown: $('crown'), crownPicker: $('crown-picker'),
+    splash: $('splash'), izarNight: $('izar-night-toggle'),
   };
 
   const toArabicDigits = (value) => String(value).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
@@ -102,6 +105,51 @@
     els.theme.textContent = `المظهر: ${theme.label}`;
   }
 
+  function applyCrown() {
+    els.crown.hidden = state.crown === 0;
+    els.crown.style.setProperty('--crown-h', `${state.crown}px`);
+    for (const btn of els.crownPicker.querySelectorAll('[data-crown]')) {
+      btn.setAttribute('aria-pressed', String(Number(btn.dataset.crown) === state.crown));
+    }
+  }
+
+  // الافتتاح: أول فتح في اليوم وحده، ويُتخطّى باللمس أو بأي مفتاح
+  const today = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  };
+  let splashTimer = 0;
+
+  function hideSplash() {
+    clearTimeout(splashTimer);
+    els.splash.classList.add('is-leaving');
+    splashTimer = setTimeout(() => { els.splash.hidden = true; }, 150);
+  }
+
+  function playSplash() {
+    clearTimeout(splashTimer);
+    els.splash.hidden = false;
+    els.splash.classList.remove('is-leaving');
+    // إعادة تشغيل الحركات من أولها
+    for (const node of [els.splash, ...els.splash.querySelectorAll('*')]) {
+      node.style.animation = 'none';
+      void node.getBoundingClientRect();
+      node.style.animation = '';
+    }
+    els.splash.focus({ preventScroll: true });
+    splashTimer = setTimeout(() => { els.splash.hidden = true; }, SPLASH_MS);
+  }
+
+  function initSplash() {
+    let seenToday = false;
+    try {
+      seenToday = localStorage.getItem(SPLASH_KEY) === today();
+      localStorage.setItem(SPLASH_KEY, today());
+    } catch (e) { /* التخزين غير متاح: يظهر الافتتاح في كل فتح */ }
+    if (seenToday) els.splash.hidden = true;
+    else splashTimer = setTimeout(() => { els.splash.hidden = true; }, SPLASH_MS);
+  }
+
   // يقيس عرض كل شطر في سطر واحد بكل حجم، ويقارنه بالعرض المتاح في البطاقة
   const ruler = document.createElement('span');
   ruler.className = 'measure';
@@ -143,6 +191,21 @@
     els.table.tHead.innerHTML = head;
     els.table.tBodies[0].innerHTML = rows;
   }
+
+  els.splash.addEventListener('click', hideSplash);
+  els.splash.addEventListener('keydown', hideSplash);
+  $('splash-replay').addEventListener('click', playSplash);
+
+  els.crownPicker.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-crown]');
+    if (!btn) return;
+    state.crown = Number(btn.dataset.crown);
+    applyCrown();
+  });
+
+  els.izarNight.addEventListener('change', () => {
+    els.page.classList.toggle('is-izar-night', els.izarNight.checked);
+  });
 
   els.reveal.addEventListener('click', () => {
     setRevealed(true);
@@ -194,8 +257,10 @@
     if (saved > 0 && saved < THEMES.length) state.themeIndex = saved;
   } catch (e) { /* التخزين غير متاح */ }
 
+  initSplash();
   applyTheme();
   applySize();
+  applyCrown();
   render();
   setRevealed(false);
   measure();
