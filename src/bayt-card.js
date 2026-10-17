@@ -3,27 +3,37 @@
 // نموذج بطاقة البيت: عرض فقط، لا تخزين ولا خوارزمية مراجعة.
 (function () {
   const ABYAT = [
-    { poet: 'المتنبي', bahr: 'البسيط', title: 'واحرّ قلباه',
+    { poet: 'المتنبي', bahr: 'البسيط', title: 'واحرّ قلباه', ard: 'mashriq',
       sadr: 'الْخَيْلُ وَاللَّيْلُ وَالْبَيْداءُ تَعْرِفُنِي',
       ajuz: 'وَالسَّيْفُ وَالرُّمْحُ وَالْقِرْطاسُ وَالْقَلَمُ' },
-    { poet: 'امرؤ القيس', bahr: 'الطويل', title: 'قفا نبك',
+    { poet: 'ابن زيدون', bahr: 'البسيط', title: 'النونية', ard: 'andalus',
+      sadr: 'أَضْحَى التَّنائِي بَدِيلًا مِنْ تَدانِينا',
+      ajuz: 'وَنابَ عَنْ طِيبِ لُقْيانا تَجافِينا' },
+    { poet: 'امرؤ القيس', bahr: 'الطويل', title: 'قفا نبك', ard: 'mashriq',
       sadr: 'مِكَرٍّ مِفَرٍّ مُقْبِلٍ مُدْبِرٍ مَعًا',
       ajuz: 'كَجُلْمُودِ صَخْرٍ حَطَّهُ السَّيْلُ مِنْ عَلِ' },
-    { poet: 'المتنبي', bahr: 'الطويل', title: 'على قدر أهل العزم',
+    { poet: 'ابن خفاجة', bahr: 'البسيط', title: 'يا أهل أندلس', ard: 'andalus',
+      sadr: 'يا أَهْلَ أَنْدَلُسٍ لِلَّهِ دَرُّكُمُ',
+      ajuz: 'ماءٌ وَظِلٌّ وَأَنْهارٌ وَأَشْجارُ' },
+    { poet: 'المتنبي', bahr: 'الطويل', title: 'على قدر أهل العزم', ard: 'mashriq',
       sadr: 'وَتَعْظُمُ فِي عَيْنِ الصَّغِيرِ صِغارُها',
       ajuz: 'وَتَصْغُرُ فِي عَيْنِ الْعَظِيمِ الْعَظائِمُ' },
-    { poet: 'أبو تمام', bahr: 'البسيط', title: 'فتح عمّورية',
+    { poet: 'أبو البقاء الرندي', bahr: 'البسيط', title: 'رثاء الأندلس', ard: 'andalus',
+      sadr: 'لِكُلِّ شَيْءٍ إِذا ما تَمَّ نُقْصانُ',
+      ajuz: 'فَلا يُغَرَّ بِطِيبِ الْعَيْشِ إِنْسانُ' },
+    { poet: 'أبو تمام', bahr: 'البسيط', title: 'فتح عمّورية', ard: 'mashriq',
       sadr: 'السَّيْفُ أَصْدَقُ أَنْباءً مِنَ الْكُتُبِ',
       ajuz: 'فِي حَدِّهِ الْحَدُّ بَيْنَ الْجِدِّ وَاللَّعِبِ' },
-    { poet: 'زهير بن أبي سلمى', bahr: 'الطويل', title: 'أمن أمّ أوفى',
+    { poet: 'زهير بن أبي سلمى', bahr: 'الطويل', title: 'أمن أمّ أوفى', ard: 'mashriq',
       sadr: 'وَمَهْما تَكُنْ عِنْدَ امْرِئٍ مِنْ خَلِيقَةٍ',
       ajuz: 'وَإِنْ خالَها تَخْفَى عَلَى النّاسِ تُعْلَمِ' },
-    { poet: 'زهير بن أبي سلمى', bahr: 'الطويل', title: 'أمن أمّ أوفى',
+    { poet: 'زهير بن أبي سلمى', bahr: 'الطويل', title: 'أمن أمّ أوفى', ard: 'mashriq',
       sadr: 'وَمَنْ لَمْ يُصانِعْ فِي أُمُورٍ كَثِيرَةٍ',
       ajuz: 'يُضَرَّسْ بِأَنْيابٍ وَيُوطَأْ بِمَنْسِمِ' },
   ];
 
   const SIZES = [18, 19, 20, 24];
+  const RABAT_SIZE = 24;
   const LINE_RATIO = 1.85;
   const HARAKAT = /[ً-ْٰ]/g;
   const THEMES = [
@@ -36,7 +46,9 @@
   const state = { index: 0, tashkeel: true, size: 19, themeIndex: 0 };
   const $ = (id) => document.getElementById(id);
   const els = {
-    page: $('page'), meta: $('card-meta'), count: $('card-count'), title: $('card-title'),
+    page: $('page'), card: $('card'), poet: $('card-poet'), bahr: $('card-bahr'),
+    count: $('card-count'), title: $('card-title'),
+    rabatSadr: $('rabat-sadr'), rabatAjuz: $('rabat-ajuz'),
     sadr: $('sadr'), ajuz: $('ajuz'), slot: $('ajuz-slot'), reveal: $('reveal'), rate: $('rate'),
     status: $('status'), tashkeel: $('tashkeel-toggle'), theme: $('theme-toggle'),
     sizes: $('size-picker'), compact: $('compact-toggle'), widthNote: $('width-note'),
@@ -48,11 +60,18 @@
 
   function render() {
     const bayt = ABYAT[state.index];
-    els.meta.textContent = `${bayt.poet} · ${bayt.bahr}`;
+    // الثوب من أرض القصيدة وحدها، لا من العصر ولا من الوضع الليلي
+    const andalus = bayt.ard === 'andalus';
+    els.card.classList.toggle('zh-lawh--abbasi', !andalus);
+    els.card.classList.toggle('card--andalus', andalus);
+    els.poet.textContent = bayt.poet;
+    els.bahr.textContent = bayt.bahr;
     els.count.textContent = `${toArabicDigits(state.index + 1)} من ${toArabicDigits(ABYAT.length)}`;
     els.title.textContent = bayt.title;
     els.sadr.textContent = display(bayt.sadr);
     els.ajuz.textContent = display(bayt.ajuz);
+    els.rabatSadr.textContent = display(bayt.sadr);
+    els.rabatAjuz.textContent = display(bayt.ajuz);
   }
 
   function setRevealed(revealed) {
@@ -89,7 +108,8 @@
   ruler.setAttribute('aria-hidden', 'true');
   document.body.appendChild(ruler);
 
-  function naturalWidth(text, size) {
+  function naturalWidth(text, size, font) {
+    ruler.style.fontFamily = font;
     ruler.style.fontSize = `${size}px`;
     ruler.textContent = text;
     return ruler.getBoundingClientRect().width;
@@ -97,22 +117,27 @@
 
   function measure() {
     const available = els.sadr.getBoundingClientRect().width;
-    const sizes = SIZES.includes(state.size) ? SIZES : SIZES.concat(state.size);
+    els.page.style.setProperty('--shatr-w', `${available}px`);
     els.widthNote.textContent = `العرض المتاح للشطر الآن: ${toArabicDigits(Math.floor(available))} بكسل، وعرض الشاشة ${toArabicDigits(window.innerWidth)} بكسل.`;
 
+    const sizes = SIZES.includes(state.size) ? SIZES : SIZES.concat(state.size);
+    const columns = sizes.map((s) => ({ size: s, font: 'var(--font-matn)', label: toArabicDigits(s), current: s === state.size }))
+      .concat({ size: RABAT_SIZE, font: 'var(--font-maghribi)', label: `Rabat ${toArabicDigits(RABAT_SIZE)}`, current: false });
+
     const head = '<tr><th scope="col">البيت</th>' +
-      sizes.map((s) => `<th scope="col"${s === state.size ? ' class="is-current"' : ''}>${toArabicDigits(s)}</th>`).join('') + '</tr>';
+      columns.map((c) => `<th scope="col"${c.current ? ' class="is-current"' : ''}>${c.label}</th>`).join('') + '</tr>';
     const rows = ABYAT.map((bayt, i) => {
-      const cells = sizes.map((s) => {
-        const widest = Math.max(naturalWidth(display(bayt.sadr), s), naturalWidth(display(bayt.ajuz), s));
+      const cells = columns.map((c) => {
+        const widest = Math.max(naturalWidth(display(bayt.sadr), c.size, c.font), naturalWidth(display(bayt.ajuz), c.size, c.font));
         const spare = Math.floor(available - widest);
         const fits = spare >= 0;
-        const classes = [fits ? 'is-fit' : 'is-broken', s === state.size ? 'is-current' : ''].join(' ').trim();
+        const classes = [fits ? 'is-fit' : 'is-broken', c.current ? 'is-current' : ''].join(' ').trim();
         const mark = fits ? '✓' : '✗';
         const number = spare < 0 ? `−${toArabicDigits(-spare)}` : toArabicDigits(spare);
         return `<td class="${classes}">${mark} ${number}</td>`;
       }).join('');
-      const label = `${toArabicDigits(i + 1)}. ${bayt.poet.split(' بن ')[0]}، ${bayt.bahr.replace('ال', '')}`;
+      const ard = bayt.ard === 'andalus' ? 'أندلس' : 'مشرق';
+      const label = `${toArabicDigits(i + 1)}. ${bayt.poet.split(' بن ')[0]}، ${ard}`;
       return `<tr${i === state.index ? ' aria-current="true"' : ''}><th scope="row">${label}</th>${cells}</tr>`;
     }).join('');
     els.table.tHead.innerHTML = head;
@@ -174,5 +199,8 @@
   render();
   setRevealed(false);
   measure();
-  if (document.fonts) document.fonts.ready.then(measure);
+  // Rabat لا يُحمَّل حتى يُطلب، فنطلبه صراحةً قبل القياس
+  if (document.fonts) {
+    Promise.all([document.fonts.load('24px Rabat'), document.fonts.load('20px Kufam')]).then(measure, measure);
+  }
 })();

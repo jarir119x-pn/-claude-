@@ -33,7 +33,17 @@
 .card { max-width: none; width: 100%; display: grid; gap: var(--space-4); }
 .is-compact .card { padding: var(--space-6) 14px var(--space-4); }
 .card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.card__meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); min-width: 0; }
+.card__poet { font-family: var(--font-kufi); font-size: 16px; line-height: 24px; color: var(--midad-muted); }
+.card__bahr { font-size: 14px; line-height: 22px; color: var(--midad-muted); }
+.card__bahr::before { content: "· "; }
 .card__title { font-family: var(--font-kufi); font-size: 24px; line-height: 36px; font-weight: 600; margin: 0; text-wrap: balance; }
+
+/* الثوب الأندلسي: الإطار الذهبي بشمستيه، والعنوان واسم الشاعر بالمغربي (لا أصغر من ٢٤) */
+.is-compact .card--andalus { padding-top: var(--space-8); }
+.card--andalus .card__head { padding-inline: var(--space-6); }
+.card--andalus .card__poet { font-family: var(--font-maghribi); font-size: 24px; line-height: 40px; }
+.card--andalus .card__title { font-family: var(--font-maghribi); font-size: 28px; line-height: 52px; font-weight: 400; }
 .card .zh-bayt { font-size: var(--bayt-size); line-height: var(--bayt-lh); width: 100%; }
 
 /* العجز المحجوب: يحتفظ بمكانه، وخطّ متقطّع يدلّ عليه */
@@ -118,7 +128,11 @@
   width: var(--tile); height: var(--tile); display: grid; place-items: center;
   background: var(--lazaward-deep);
 }
-.icon-tile .zh-ornament--malwiya { color: var(--tibr); height: calc(var(--tile) * .8); width: calc(var(--tile) * .5); }
+.icon-tile .zh-ornament { color: var(--tibr); width: calc(var(--tile) * .8); height: calc(var(--tile) * .8); }
+
+.rabat-sample { display: grid; gap: var(--space-2); max-width: var(--shatr-w, 100%); margin-inline: auto; width: 100%;
+  padding-block: var(--space-3); border-block: var(--border-hair) solid var(--khatt);
+  font-family: var(--font-maghribi); font-size: 24px; line-height: 52px; text-align: center; }
 .icon-tile figcaption { font-size: 13px; color: var(--midad-muted); }
 
 /* حساب العرض الطبيعي للشطر */

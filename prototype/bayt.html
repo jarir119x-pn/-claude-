@@ -21,8 +21,10 @@
   </header>
 
   <article class="zh-lawh zh-lawh--abbasi card" id="card">
+    <span class="zh-lawh__corner zh-lawh__corner--start" aria-hidden="true"></span>
+    <span class="zh-lawh__corner zh-lawh__corner--end" aria-hidden="true"></span>
     <div class="card__head">
-      <div class="zh-lawh__kicker" id="card-meta"></div>
+      <div class="card__meta"><span class="card__poet" id="card-poet"></span><span class="card__bahr" id="card-bahr"></span></div>
       <span class="zh-badge" id="card-count"></span>
     </div>
     <h2 class="card__title" id="card-title"></h2>
@@ -69,7 +71,7 @@
     <div class="zh-divider"><span class="zh-divider__star"></span></div>
     <div class="lab__head">
       <h2 class="lab__title" id="lab-title">لوحة التجربة</h2>
-      <p class="lab__note">للمسائل المفتوحة الثلاث، وتُحذف بعد حسمها.</p>
+      <p class="lab__note">للمسائل المفتوحة، وتُحذف بعد حسمها. الأبيات المشرقية بإطار الظل، والأندلسية بالإطار الذهبي.</p>
     </div>
 
     <div class="lab__block">
@@ -97,17 +99,26 @@
 
     <div class="lab__block">
       <h3 class="lab__label">٢. التشكيل الكامل مع Kufam</h3>
-      <p class="lab__note">اختر حجم ٣٢ ثم تنقّل بين الأبيات الستة، وانظر إلى الشدّة مع الحركة والسكون والتنوين.</p>
+      <p class="lab__note">اختر حجم ٣٢ ثم تنقّل بين الأبيات التسعة، وانظر إلى الشدّة مع الحركة والسكون والتنوين.</p>
     </div>
 
     <div class="lab__block">
-      <h3 class="lab__label">٣. الملوية أيقونةً</h3>
+      <h3 class="lab__label">٣. Rabat في المتن بحجم ٢٤ (للعلم فقط)</h3>
+      <p class="lab__note">البيت الحالي بخط Rabat، في عرض الشطر نفسه الذي في البطاقة. عمود «Rabat ٢٤» في الجدول أعلاه يقيس الأبيات كلها به.</p>
+      <div class="rabat-sample" id="rabat-sample">
+        <span class="rabat-sample__shatr" id="rabat-sadr"></span>
+        <span class="rabat-sample__shatr" id="rabat-ajuz"></span>
+      </div>
+    </div>
+
+    <div class="lab__block">
+      <h3 class="lab__label">٤. الشمسة أيقونةً</h3>
       <p class="lab__note">حجم ٤٨ هو حجم أيقونة الشاشة الرئيسية الفعلي على أغلب هواتف أندرويد.</p>
       <div class="icons">
-        <figure class="icon-tile" style="--tile: 40px"><span class="icon-tile__face"><span class="zh-ornament zh-ornament--malwiya"></span></span><figcaption>٤٠</figcaption></figure>
-        <figure class="icon-tile" style="--tile: 48px"><span class="icon-tile__face"><span class="zh-ornament zh-ornament--malwiya"></span></span><figcaption>٤٨</figcaption></figure>
-        <figure class="icon-tile" style="--tile: 64px"><span class="icon-tile__face"><span class="zh-ornament zh-ornament--malwiya"></span></span><figcaption>٦٤</figcaption></figure>
-        <figure class="icon-tile" style="--tile: 96px"><span class="icon-tile__face"><span class="zh-ornament zh-ornament--malwiya"></span></span><figcaption>٩٦</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 40px"><span class="icon-tile__face"><span class="zh-ornament"></span></span><figcaption>٤٠</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 48px"><span class="icon-tile__face"><span class="zh-ornament"></span></span><figcaption>٤٨</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 64px"><span class="icon-tile__face"><span class="zh-ornament"></span></span><figcaption>٦٤</figcaption></figure>
+        <figure class="icon-tile" style="--tile: 96px"><span class="icon-tile__face"><span class="zh-ornament"></span></span><figcaption>٩٦</figcaption></figure>
       </div>
     </div>
   </section>
