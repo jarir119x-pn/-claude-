@@ -1,0 +1,58 @@
+/* أنماط التطبيق فوق design/bundle.css. كل لون وقياس من tokens.css، وكل زخرفة من zakharif.css. */
+
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { min-height: 100vh; overflow-x: clip; }
+a.zh-btn { text-decoration: none; }
+
+.app {
+  box-sizing: border-box;
+  max-width: 720px;
+  margin-inline: auto;
+  padding-block: var(--space-6) var(--space-12);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.app *, .app *::before, .app *::after { box-sizing: border-box; }
+.view { display: grid; gap: var(--space-6); }
+.view > * { min-width: 0; }
+
+/* التاج يلامس أعلى الشاشة وحافتيها */
+.view > .naqsh-taj:first-child { margin-top: calc(-1 * var(--space-6)); margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+
+.view__title { font-family: var(--font-kufi); font-size: 22px; line-height: 32px; font-weight: 600; margin: 0; }
+.view__note { margin: 0; font-size: 15px; line-height: 26px; color: var(--midad-muted); }
+.status { margin: 0; font-size: 15px; line-height: 26px; color: var(--midad-muted); }
+.status.is-error { color: var(--qirmiz-ink); }
+
+/* ———— الرئيسية ———— */
+.due { display: grid; justify-items: center; gap: var(--space-1); text-align: center; padding-block: var(--space-4); }
+.due__label { font-size: 16px; line-height: 24px; color: var(--midad-muted); }
+.due__count { font-family: var(--font-kufi); font-size: 72px; line-height: 88px; font-weight: 600; }
+.stats { display: flex; justify-content: center; gap: var(--space-4); margin: 0; font-size: 15px; color: var(--midad-muted); }
+
+.actions { display: grid; gap: var(--space-2); }
+.actions .zh-btn { min-height: 48px; justify-content: center; }
+.file-btn { position: relative; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.file-btn:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--raqq); }
+
+/* ———— الافتتاح: شمسة تُرسم بالتِّبر ثم تمتلئ، في أقل من ثانية ———— */
+.splash {
+  position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: var(--space-4);
+  background: var(--lazaward-deep); color: var(--tibr); cursor: pointer;
+  animation: splash-out 150ms linear 800ms forwards;
+}
+.splash.is-leaving { animation: splash-out 120ms linear forwards; }
+.splash__shamsa { width: 120px; height: 120px; }
+.splash__line { fill: none; stroke: currentColor; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 450ms cubic-bezier(.2, .7, .2, 1) forwards; }
+.splash__core { fill: currentColor; opacity: 0; animation: fill-in 250ms linear 400ms forwards; }
+.splash__name { margin: 0; font-family: var(--font-kufi); font-size: 44px; line-height: 60px; font-weight: 600; color: var(--on-deep); opacity: 0; animation: fill-in 300ms linear 300ms forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fill-in { to { opacity: 1; } }
+@keyframes splash-out { to { opacity: 0; visibility: hidden; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .splash__line { animation: none; stroke-dashoffset: 0; }
+  .splash__core, .splash__name { animation: none; opacity: 1; }
+}
